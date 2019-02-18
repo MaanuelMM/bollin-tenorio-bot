@@ -25,6 +25,6 @@ class DataLoader:
         else:
             logger.info("Successfully loaded the configuration JSON file.")
             self.telegram_token = os.environ.get('TOKEN') # Getting the token variable directly asking to the server
-            self.server_port = os.environ.get('PORT') # Getting the port number directly asking to the server
+            self.server_port = os.environ.get('PORT', '8443') # Getting the port number directly asking to the server
             self.server_url = os.environ.get('URL') # Getting the server URL directly asking to the server
             self.hola_command = data_and_settings["hola_command"]

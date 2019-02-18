@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Authors:      MaanuelMM
+# Authors:      MaanuelMM, CoreDumped-ETSISI
 # Credits:      python-telegram-bot, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/02/17
+# Last update:  2019/02/18
 
 import telegram
 import logger
 import datetime
-import os
 
 from data_loader import DataLoader
 from logger import get_logger
@@ -48,10 +47,11 @@ def log_message(update):
         text = update.message.text
     except:
         text = "something"
-    logger.info("Received: \"" + text + "\" from " + username + " [Chat ID: " + str(update.message.chat_id) + "]")
+    logger.info("Received: \"" + text + "\" from " + username + " [Chat ID: " + str(update.message.chat_id) + "].")
 
 def hola_command(bot, update):
     update.effective_message.reply_text(settings.hola_command)
+
 
 if __name__ == "__main__":
     # Enable logging
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         # Load data and settings
         load_settings()
         # Set up the Updater
-        logger.info("Making connection with the Telegram API.")
+        logger.info("Connecting to the Telegram API...")
         updater = Updater(settings.telegram_token)
         # Add handlers
         dispatcher = updater.dispatcher
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         updater.bot.setWebhook("{}{}".format(settings.server_url, settings.server_port))
     except:
         # Shut down
-        logger.info("ERROR making connection with the Telegram API. Shutting down.")
+        logger.info("ERROR making connection to the Telegram API. Shutting down...")
         quit()
     else:
         # Successful start

@@ -31,7 +31,7 @@ server = Flask(__name__)
 
 
 def log_message(message):
-    logger.info("Received: \"" + message.text + "\" from " + message.from_user.username + ".")
+    logger.info("Received: \"" + message.text + "\" from " + message.from_user.username + " [Chat ID: " + message.chat.id + "].")
 
 
 @bot.message_handler(commands=['start']) # Start message handler

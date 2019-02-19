@@ -3,11 +3,10 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/02/18
+# Last update:  2019/02/19
 
 import os
 import telebot
-import datetime
 import logger
 
 from flask import Flask, request
@@ -16,30 +15,46 @@ from logger import get_logger
 
 # Enable logger
 logger = get_logger("bot_starter", True)
-logger.info("Starting...")
-# Get Congif Vars
+logger.info("Starting bot...")
+# Get Config Vars
+logger.info("Getting Config Vars...")
 TOKEN = os.environ.get('TOKEN')
 URL = os.environ.get('URL')
 PORT = os.environ.get('PORT', 5000)
-try:
-    # Telegram API connection
-    logger.info("Connecting to the Telegram API...")
-    bot = telebot.TeleBot(token=TOKEN)
-    logger.info("Successfully connected to the Telegram API.")
-except:
-    logger.info("Error connecting to the Telegram API. Shutting down...")
-    quit()
-else:
-    # Start Flask app
-    server = Flask(__name__)
+logger.info("Successfully gotten Config Vars.")
+# Telegram API connection
+logger.info("Connecting to the Telegram API...")
+bot = telebot.TeleBot(token=TOKEN)
+logger.info("Successfully connected to the Telegram API.")
+# Start Flask server app
+server = Flask(__name__)
 
 
-@bot.message_handler(commands=['start']) # welcome message handler
-def send_welcome(message):
+def log_message(message):
+    try:
+        username = message.from_user.username
+    except:
+        username = "Unknown"
+    try:
+        text = message.text
+    except:
+        text = "something"
+    logger.info("Received: \"" + text + "\" from " + username + " [Chat ID: " + str(message.chat_id) + "].")
+
+
+@bot.message_handler(commands=['start']) # Start message handler
+def send_start(message):
+    log_message(message)
     bot.reply_to(message, "Hola a todos, mis papirrines <3")
 
-@bot.message_handler(commands=['help']) # help message handler
+@bot.message_handler(commands=['hola']) # Hola message handler
+def send_hola(message):
+    log_message(message)
+    bot.reply_to(message, "Hola, " + message.from_user.first_name)
+
+@bot.message_handler(commands=['help']) # Help message handler
 def send_help(message):
+    log_message(message)
     bot.reply_to(message, "Lo siento si funciono mal o estoy muy limitado en funciones, pero estoy trabajando para mejorar día a día :)")
 
 
@@ -50,17 +65,18 @@ def getMessage():
 
 @server.route("/")
 def webhook():
+    # Remove current webhook
+    logger.info("Removing current webhook...")
     bot.remove_webhook()
+    logger.info("Successfully removed current webhook.")
+    # Create new webhook
+    logger.info("Creating new webhook...")
     bot.set_webhook(url=URL+TOKEN)
+    logger.info("Successfully created new webhook.")
     return "!", 200
 
 
 if __name__ == "__main__":
-    try:
-        # run server
-        logger.info("Starting running server...")
-        server.run(host="0.0.0.0", port=int(PORT))
-        logger.info("Listening...")
-    except:
-        logger.info("Error starting running server. Shutting down...")
-        quit()
+    # Run server
+    logger.info("Starting running server...")
+    server.run(host="0.0.0.0", port=int(PORT))

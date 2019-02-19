@@ -30,23 +30,23 @@ logger.info("Successfully connected to the Telegram API.")
 server = Flask(__name__)
 
 
-def log_message(message, chat_id):
-    logger.info("Received: \"" + message.text + "\" from " + message.from_user.username + " [Chat ID: " + str(chat_id) + "].")
+def log_message(message):
+    logger.info("Received: \"" + message.text + "\" from " + message.from_user.username + ".")
 
 
 @bot.message_handler(commands=['start']) # Start message handler
-def send_start(message, chat_id):
-    log_message(message, chat_id)
+def send_start(message):
+    log_message(message)
     bot.reply_to(message, "Hola a todos, mis papirrines <3")
 
 @bot.message_handler(commands=['hola']) # Hola message handler
-def send_hola(message, chat_id):
-    log_message(message, chat_id)
+def send_hola(message):
+    log_message(message)
     bot.reply_to(message, "Hola, " + message.from_user.first_name)
 
 @bot.message_handler(commands=['help']) # Help message handler
-def send_help(message, chat_id):
-    log_message(message, chat_id)
+def send_help(message):
+    log_message(message)
     bot.reply_to(message, "Lo siento si funciono mal o estoy muy limitado en funciones, pero estoy trabajando para mejorar día a día :)")
 
 

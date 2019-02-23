@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Authors:      I don't know :(
 # Credits:      CoreDumped-ETSISI
 # Created:      2019/02/14
-# Last update:  2019/02/14
+# Last update:  2019/02/23
 
 import logging
 

@@ -39,8 +39,7 @@ def log_emt_error(response):
 
 def remove_command(text):
     # '/command' and 'the rest of the message'
-    text.split(' ', 1)
-    return text[1] # the rest of the message
+    return text.split(' ', 1)[1] # the rest of the message
 
 # https://stackoverflow.com/questions/3501382/checking-whether-a-variable-is-an-integer-or-not
 def letter_or_space_in_text(text):

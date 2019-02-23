@@ -69,7 +69,7 @@ def sort_arrivals(arrives):
     lines_list = []
     for arrive in arrives:
         if(int_or_decimal_str(arrive["busTimeLeft"])):
-            arrives["busTimeLeft"] = process_time_left(int(arrives["busTimeLeft"]))
+            arrive["busTimeLeft"] = process_time_left(int(arrive["busTimeLeft"]))
             if(lines_list and arrive["lineId"] in lines_list):
                 i = 0
                 while arrive["lineId"] != arrives_sorted[i]["lineId"]:

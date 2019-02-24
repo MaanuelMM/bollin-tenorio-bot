@@ -110,7 +110,7 @@ def send_parada(message):
     if(str(message.chat.id) in data.EMTMADRID_ARRIVE_LIST and text_with_no_command.upper() in
             data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)]):
         text_with_no_command = data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)][text_with_no_command.upper()]
-    elif(text_with_no_command == "" or not text_with_no_command.isdecimal()):
+    if(text_with_no_command == "" or not text_with_no_command.isdecimal()):
             bot.reply_to(message, data.PARADA_BAD_SPECIFIED)
     else:
         response = get_arrive_stop(data.EMTMADRID_BASEURL, data.EMTMADRID_GETARRIVESTOP_RELATIVEURL,

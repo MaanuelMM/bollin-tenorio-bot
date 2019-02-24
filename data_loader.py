@@ -9,6 +9,7 @@ import json
 import os
 
 from logger import get_logger
+from ast import literal_eval
 
 
 logger = get_logger("data_loader")
@@ -25,7 +26,7 @@ class DataLoader:
             self.URL = os.environ.get('URL')
             self.EMTMADRID_IDCLIENT = os.environ.get('EMTMADRID_IDCLIENT')
             self.EMTMADRID_PASSKEY = os.environ.get('EMTMADRID_PASSKEY')
-            self.EMTMADRID_ARRIVE_LIST = json.loads(str(os.environ.get('EMTMADRID_ARRIVE_LIST')))
+            self.EMTMADRID_ARRIVE_LIST = literal_eval(os.environ.get('EMTMADRID_ARRIVE_LIST'))
             data = json.load(open('data/data.json'), encoding="utf-8")
         except:
             logger.exception("Failed to load the data from the JSON file.")

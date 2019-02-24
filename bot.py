@@ -107,14 +107,17 @@ def send_hola(message):
 def send_parada(message):
     log_message(message)
     text_with_no_command = remove_command(message.text)
-    if(text_with_no_command == "" or not text_with_no_command.isdecimal()):
+    if(str(message.chat.id) in data.EMTMADRID_ARRIVE_LIST and text_with_no_command in
+            data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)]):
+        text_with_no_command = data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)][text_with_no_command]
+    elif(text_with_no_command == "" or not text_with_no_command.isdecimal()):
             bot.reply_to(message, data.PARADA_BAD_SPECIFIED)
     else:
         response = get_arrive_stop(data.EMTMADRID_BASEURL, data.EMTMADRID_GETARRIVESTOP_RELATIVEURL,
                 data.EMTMADRID_GETARRIVESTOP_REQUESTDATA, data.EMTMADRID_IDCLIENT, data.EMTMADRID_PASSKEY,
                 text_with_no_command)
         if("arrives" in response):
-            reply = data.PARADA_SUCCESSFUL + process_response(response["arrives"]) + data.PARADA_SUCCESSFUL_DISCLAMER
+            reply = data.PARADA_SUCCESSFUL + process_response(response["arrives"]) + data.PARADA_SUCCESSFUL_DISCLAIMER
             bot.reply_to(message, reply)
             del reply
         elif("ReturnCode" in response):

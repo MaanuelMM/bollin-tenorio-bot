@@ -4,7 +4,7 @@
         "hola": "Hola, ",
         "help": "Lo siento si funciono mal o estoy muy limitado en funciones, pero estoy trabajando para mejorar día a día :-)",
         "parada_successful": "He aquí los resultados de la parada indicada:",
-        "parada_successful_disclamer": "Nota: si falta alguna línea, significa que no existen estimaciones para esta.",
+        "parada_successful_disclaimer": "Nota: si falta alguna línea, significa que no existen estimaciones para esta.",
         "parada_bad_specified": "Error, no ha introducido correctamente la parada a consultar.",
         "parada_no_estimation": "Lo siento, no existen estimaciones para la parada indicada :'(",
         "parada_fail": "Ha habido un error a la hora de realizar la consulta.\n\nContacte con el administrador del bot para tratar de solventar el problema."

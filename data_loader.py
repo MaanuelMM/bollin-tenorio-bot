@@ -3,7 +3,7 @@
 # Authors:      CoreDumped-ETSISI, MaanuelMM
 # Credits:      CoreDumped-ETSISI
 # Created:      2019/02/14
-# Last update:  2019/02/23
+# Last update:  2019/02/24
 
 import json
 import os
@@ -18,11 +18,6 @@ class DataLoader:
     def __init__(self):
         global data
         try:
-            data = json.load(open('data/data.json'), encoding="utf-8")
-        except:
-            logger.exception("Failed to load the data from the JSON file.")
-        else:
-            logger.info("Successfully loaded the data from the JSON file.")
             # Get Config Vars from server
             logger.info("Getting Config Vars from server...")
             self.TOKEN = os.environ.get('TOKEN')
@@ -30,13 +25,19 @@ class DataLoader:
             self.URL = os.environ.get('URL')
             self.EMTMADRID_IDCLIENT = os.environ.get('EMTMADRID_IDCLIENT')
             self.EMTMADRID_PASSKEY = os.environ.get('EMTMADRID_PASSKEY')
+            self.EMTMADRID_ARRIVE_LIST = json.loads(str(os.environ.get('EMTMADRID_ARRIVE_LIST')))
+            data = json.load(open('data/data.json'), encoding="utf-8")
+        except:
+            logger.exception("Failed to load the data from the JSON file.")
+        else:
+            logger.info("Successfully loaded the data from the JSON file.")
             # Get Bot Strings
             logger.info("Getting Bot Strings...")
             self.START = data["Bot"]["start"]
             self.HOLA = data["Bot"]["hola"]
             self.HELP = data["Bot"]["help"]
             self.PARADA_SUCCESSFUL = data["Bot"]["parada_successful"]
-            self.PARADA_SUCCESSFUL_DISCLAMER = data["Bot"]["parada_successful_disclamer"]
+            self.PARADA_SUCCESSFUL_DISCLAIMER = data["Bot"]["parada_successful_disclaimer"]
             self.PARADA_BAD_SPECIFIED = data["Bot"]["parada_bad_specified"]
             self.PARADA_NO_ESTIMATION = data["Bot"]["parada_no_estimation"]
             self.PARADA_FAIL = data["Bot"]["parada_fail"]

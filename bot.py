@@ -3,7 +3,7 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/02/24
+# Last update:  2019/02/26
 
 import os
 import telebot
@@ -56,9 +56,9 @@ def process_time_left(time_left):
         elif(time_left > 1200):
             return ">20:00min"
         else:
-            return " " + str(int(time_left / 60)).zfill(2) + ":" + str(int(time_left % 60)).zfill(2) + "min"
+            return "  " + str(int(time_left / 60)).zfill(2) + ":" + str(int(time_left % 60)).zfill(2) + "min"
     else:
-        return " --:--min"
+        return "  --:--min"
 
 # https://stackoverflow.com/questions/4391697/find-the-index-of-a-dict-within-a-list-by-matching-the-dicts-value
 def sort_arrivals(arrivals):

@@ -1,3 +1,4 @@
-requests==2.20.1
 Flask==1.0.2
+requests==2.21.0
+more_itertools==6.0.0
 pyTelegramBotAPI==3.6.6

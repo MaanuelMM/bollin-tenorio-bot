@@ -8,6 +8,7 @@
 import os
 import telebot
 import logger
+import more_itertools
 
 from emt_madrid import get_arrive_stop
 from data_loader import DataLoader
@@ -55,38 +56,30 @@ def process_time_left(time_left):
         elif(time_left > 1200):
             return ">20:00min"
         else:
-            return str(int(time_left / 60)).zfill(2) + ":" + str(int(time_left % 60)).zfill(2) + "min"
+            return " " + str(int(time_left / 60)).zfill(2) + ":" + str(int(time_left % 60)).zfill(2) + "min"
     else:
-        return "--:--min"
+        return " --:--min"
 
+# https://stackoverflow.com/questions/4391697/find-the-index-of-a-dict-within-a-list-by-matching-the-dicts-value
 def sort_arrivals(arrivals):
     arrivals_sorted = []
-    lines_list = []
     for arrival in arrivals:
+        index_list = list(more_itertools.locate(arrivals_sorted, pred=lambda d: d["lineId"] == arrival["lineId"]))
         arrival["busTimeLeft"] = process_time_left(arrival["busTimeLeft"])
-        if(lines_list and str(arrival["lineId"]) in lines_list):
-            i = 0
-            while arrival["lineId"] != arrivals_sorted[i]["lineId"]:
-                i += 1
-            arrivals_sorted[i]["busTimeLeft"] += "    " + str(arrival["busTimeLeft"])
-            del i
+        if(index_list): # False if empty
+            arrivals_sorted[index_list[0]]["busTimeLeft"] += "    " + arrival["busTimeLeft"]
         else:
-            lines_list.append(str(arrival["lineId"]))
-            arrival["busTimeLeft"] = str(arrival["busTimeLeft"])
             arrivals_sorted.append(arrival)
-    del lines_list
+        del index_list
     return arrivals_sorted
 
 def process_response(arrivals):
     result = ""
     if(isinstance(arrivals, dict)):
-        arrivals["busTimeLeft"] = process_time_left(arrivals["busTimeLeft"])
-        result += make_arrival_line(arrivals)
-    else:
-        arrivals_sorted = sort_arrivals(sorted(arrivals, key=lambda d: (d["busTimeLeft"])))
-        for arrival in arrivals_sorted:
-            result += make_arrival_line(arrival)
-        del arrivals_sorted
+        arrivals = str(arrivals).split() # Convert from dict to list to process it in the same function
+    arrivals = sort_arrivals(sorted(arrivals, key=lambda d: (d["busTimeLeft"])))
+    for arrival in arrivals:
+        result += make_arrival_line(arrival)
     return result + "\n\n"
 
 

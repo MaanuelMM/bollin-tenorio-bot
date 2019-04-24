@@ -3,7 +3,7 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/02/26
+# Last update:  2019/04/25
 
 import os
 import telebot
@@ -13,6 +13,7 @@ import more_itertools
 from emt_madrid import get_arrive_stop
 from data_loader import DataLoader
 from flask import Flask, request
+from flask_sslify import SSLify
 from logger import get_logger
 
 
@@ -29,6 +30,8 @@ bot = telebot.TeleBot(token=data.TOKEN)
 logger.info("Creating Flask server...")
 server = Flask(__name__)
 
+if 'DYNO' in os.environ:  # only trigger SSLify if the app is running on Heroku
+    sslify = SSLify(server)
 
 def log_message(message):
     logger.info("Received: \"" + message.text + "\" from " + message.from_user.first_name +

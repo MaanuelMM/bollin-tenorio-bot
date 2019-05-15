@@ -10,16 +10,7 @@
         "parada_fail": "Ha habido un error a la hora de realizar la consulta.\n\nContacte con el administrador del bot para tratar de solventar el problema."
     },
     "EMTMadrid": {
-        "BaseURL": "https://openbus.emtmadrid.es:9443/emt-proxy-server/last",
-        "GetArriveStop": {
-            "RelativeURL": "/geo/GetArriveStop.php",
-            "RequestData": {
-                "idClient": "",
-                "passKey": "",
-                "idStop": "",
-                "statistics": "",
-                "cultureInfo": ""
-            }
-        }
+        "GetTokenSessionURL": "https://openapi.emtmadrid.es/v1/mobilitylabs/user/login/",
+        "GetArriveStopURL": "https://openapi.emtmadrid.es/v1/transport/busemtmad/stops/<stopId>/arrives/"
     }
 }

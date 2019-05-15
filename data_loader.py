@@ -3,7 +3,7 @@
 # Authors:      CoreDumped-ETSISI, MaanuelMM
 # Credits:      CoreDumped-ETSISI
 # Created:      2019/02/14
-# Last update:  2019/02/24
+# Last update:  2019/05/16
 
 import json
 import os
@@ -17,33 +17,32 @@ logger = get_logger("data_loader")
 class DataLoader:
 
     def __init__(self):
-        global data
         try:
             # Get Config Vars from server
             logger.info("Getting Config Vars from server...")
             self.TOKEN = os.environ.get('TOKEN')
             self.PORT = os.environ.get('PORT', '5000')
             self.URL = os.environ.get('URL')
-            self.EMTMADRID_IDCLIENT = os.environ.get('EMTMADRID_IDCLIENT')
-            self.EMTMADRID_PASSKEY = os.environ.get('EMTMADRID_PASSKEY')
+            self.EMTMADRID_EMAIL = os.environ.get('EMTMADRID_EMAIL')
+            self.EMTMADRID_PASSWORD = os.environ.get('EMTMADRID_PASSWORD')
             self.EMTMADRID_ARRIVE_LIST = literal_eval(os.environ.get('EMTMADRID_ARRIVE_LIST'))
-            data = json.load(open('data/data.json'), encoding="utf-8")
+            with open('data/data.json', encoding="utf-8") as data:
+                loaded_data = json.load(data)
         except:
             logger.exception("Failed to load the data from the JSON file.")
         else:
             logger.info("Successfully loaded the data from the JSON file.")
             # Get Bot Strings
             logger.info("Getting Bot Strings...")
-            self.START = data["Bot"]["start"]
-            self.HOLA = data["Bot"]["hola"]
-            self.HELP = data["Bot"]["help"]
-            self.PARADA_SUCCESSFUL = data["Bot"]["parada_successful"]
-            self.PARADA_SUCCESSFUL_DISCLAIMER = data["Bot"]["parada_successful_disclaimer"]
-            self.PARADA_BAD_SPECIFIED = data["Bot"]["parada_bad_specified"]
-            self.PARADA_NO_ESTIMATION = data["Bot"]["parada_no_estimation"]
-            self.PARADA_FAIL = data["Bot"]["parada_fail"]
+            self.START = loaded_data["Bot"]["start"]
+            self.HOLA = loaded_data["Bot"]["hola"]
+            self.HELP = loaded_data["Bot"]["help"]
+            self.PARADA_SUCCESSFUL = loaded_data["Bot"]["parada_successful"]
+            self.PARADA_SUCCESSFUL_DISCLAIMER = loaded_data["Bot"]["parada_successful_disclaimer"]
+            self.PARADA_BAD_SPECIFIED = loaded_data["Bot"]["parada_bad_specified"]
+            self.PARADA_NO_ESTIMATION = loaded_data["Bot"]["parada_no_estimation"]
+            self.PARADA_FAIL = loaded_data["Bot"]["parada_fail"]
             # Get EMT Madrid API Data
             logger.info("Getting EMT Madrid API Data...")
-            self.EMTMADRID_BASEURL = data["EMTMadrid"]["BaseURL"]
-            self.EMTMADRID_GETARRIVESTOP_RELATIVEURL = data["EMTMadrid"]["GetArriveStop"]["RelativeURL"]
-            self.EMTMADRID_GETARRIVESTOP_REQUESTDATA = data["EMTMadrid"]["GetArriveStop"]["RequestData"]
+            self.EMTMADRID_GETTOKENSESSIONURL = loaded_data["EMTMadrid"]["GetTokenSessionURL"]
+            self.EMTMADRID_GETARRIVESTOPURL = loaded_data["EMTMadrid"]["GetArriveStopURL"]

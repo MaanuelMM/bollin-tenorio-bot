@@ -3,14 +3,14 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/04/25
+# Last update:  2019/05/16
 
 import os
 import telebot
 import logger
 import more_itertools
 
-from emt_madrid import get_arrive_stop
+from emt_madrid import get_token, get_arrive_stop
 from data_loader import DataLoader
 from flask import Flask, request
 from flask_sslify import SSLify
@@ -38,11 +38,10 @@ def log_message(message):
             " (ID: " + str(message.from_user.id) + ") " + "[Chat ID: " + str(message.chat.id) + "].")
 
 def log_emt_error(response):
-    logger.info("Error in EMT Madrid API request. Return code: " + response["ReturnCode"] + ". Description: " +
-            response["Description"] + ".")
+    logger.info("Error in EMT Madrid API request:\n" + response)
 
 def make_arrival_line(arrival):
-    return "\n\nLínea " + arrival["lineId"] + " (" + arrival["destination"] + "):\n    " + arrival["busTimeLeft"]
+    return "\n\nLínea " + arrival["line"] + " (" + arrival["destination"] + "):\n    " + arrival["estimateArrive"]
 
 def remove_command(text):
     # '/command' and 'the rest of the message'
@@ -67,10 +66,10 @@ def process_time_left(time_left):
 def sort_arrivals(arrivals):
     arrivals_sorted = []
     for arrival in arrivals:
-        index_list = list(more_itertools.locate(arrivals_sorted, pred=lambda d: d["lineId"] == arrival["lineId"]))
-        arrival["busTimeLeft"] = process_time_left(arrival["busTimeLeft"])
+        index_list = list(more_itertools.locate(arrivals_sorted, pred=lambda d: d["line"] == arrival["line"]))
+        arrival["estimateArrive"] = process_time_left(arrival["estimateArrive"])
         if(index_list): # False if empty
-            arrivals_sorted[index_list[0]]["busTimeLeft"] += "    " + arrival["busTimeLeft"]
+            arrivals_sorted[index_list[0]]["estimateArrive"] += "    " + arrival["estimateArrive"]
         else:
             arrivals_sorted.append(arrival)
         del index_list
@@ -78,9 +77,7 @@ def sort_arrivals(arrivals):
 
 def process_response(arrivals):
     result = ""
-    if(isinstance(arrivals, dict)):
-        arrivals = str(arrivals).split() # Convert from dict to list to process it in the same function
-    arrivals = sort_arrivals(sorted(arrivals, key=lambda d: (d["busTimeLeft"])))
+    arrivals = sort_arrivals(sorted(arrivals, key=lambda d: (d["estimateArrive"])))
     for arrival in arrivals:
         result += make_arrival_line(arrival)
     return result + "\n\n"
@@ -109,19 +106,21 @@ def send_parada(message):
     if(text_with_no_command == "" or not text_with_no_command.isdecimal()):
             bot.reply_to(message, data.PARADA_BAD_SPECIFIED)
     else:
-        response = get_arrive_stop(data.EMTMADRID_BASEURL, data.EMTMADRID_GETARRIVESTOP_RELATIVEURL,
-                data.EMTMADRID_GETARRIVESTOP_REQUESTDATA, data.EMTMADRID_IDCLIENT, data.EMTMADRID_PASSKEY,
-                text_with_no_command)
-        if("arrives" in response):
-            reply = data.PARADA_SUCCESSFUL + process_response(response["arrives"]) + data.PARADA_SUCCESSFUL_DISCLAIMER
-            bot.reply_to(message, reply)
-            del reply
-        elif("ReturnCode" in response):
-            log_emt_error(response)
+        try:
+            token_response = get_token(data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
+            token = token_response["data"][0]["accessToken"]
+            arrive_stop_response = get_arrive_stop(data.EMTMADRID_GETARRIVESTOPURL, token, text_with_no_command)
+            arrive_stop = arrive_stop_response["data"][0]["Arrive"]
+            if arrive_stop:
+                reply = data.PARADA_SUCCESSFUL + process_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER
+                bot.reply_to(message, reply)
+                del reply
+            else:
+                bot.reply_to(message, data.PARADA_NO_ESTIMATION)
+            del token_response, token, arrive_stop_response, arrive_stop
+        except:
+            log_emt_error(token_response + "\n" + arrive_stop_response)
             bot.reply_to(message, data.PARADA_FAIL)
-        else:
-            bot.reply_to(message, data.PARADA_NO_ESTIMATION)
-        del response
 
 # Help command handler
 @bot.message_handler(commands=['help'])

@@ -9,7 +9,7 @@ import requests
 
 
 def get_token(url, email, password):
-    return requests.get(url, headers={"email": email, "password": password}).json()["data"][0]["accessToken"]
+    return requests.get(url, headers={"email": email, "password": password}).json()
 
 def get_arrive_stop(url, token, id_stop):
     return requests.post(url.replace("<stopId>", id_stop), headers={"accessToken": token}).json()

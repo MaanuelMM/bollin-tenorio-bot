@@ -119,8 +119,18 @@ def send_parada(message):
                 bot.reply_to(message, data.PARADA_NO_ESTIMATION)
             del token_response, token, arrive_stop_response, arrive_stop
         except:
-            log_emt_error(token_response + "\n" + arrive_stop_response)
+            log = ""
+            try:
+                log += (str(token_response))
+                log += (str(arrive_stop_response))
+            except:
+                log += "\nSome data is missing."
+            log_emt_error(log)
             bot.reply_to(message, data.PARADA_FAIL)
+            try:
+                del log, token_response, token, arrive_stop_response, arrive_stop
+            except:
+                pass
 
 # Help command handler
 @bot.message_handler(commands=['help'])

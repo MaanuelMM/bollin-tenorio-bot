@@ -46,3 +46,4 @@ class DataLoader:
             logger.info("Getting EMT Madrid API Data...")
             self.EMTMADRID_GETTOKENSESSIONURL = loaded_data["EMTMadrid"]["GetTokenSessionURL"]
             self.EMTMADRID_GETARRIVESTOPURL = loaded_data["EMTMadrid"]["GetArriveStopURL"]
+            self.EMTMADRID_GETARRIVESTOPJSON = loaded_data["EMTMadrid"]["GetArriveStopJSON"]

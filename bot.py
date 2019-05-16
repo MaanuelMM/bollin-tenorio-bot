@@ -109,7 +109,7 @@ def send_parada(message):
         try:
             token_response = get_token(data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
             token = token_response["data"][0]["accessToken"]
-            arrive_stop_response = get_arrive_stop(data.EMTMADRID_GETARRIVESTOPURL, token, text_with_no_command)
+            arrive_stop_response = get_arrive_stop(data.EMTMADRID_GETARRIVESTOPURL, token, text_with_no_command, data.EMTMADRID_GETARRIVESTOPJSON)
             arrive_stop = arrive_stop_response["data"][0]["Arrive"]
             if arrive_stop:
                 reply = data.PARADA_SUCCESSFUL + process_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER

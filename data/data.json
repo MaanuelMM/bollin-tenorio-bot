@@ -11,6 +11,13 @@
     },
     "EMTMadrid": {
         "GetTokenSessionURL": "https://openapi.emtmadrid.es/v1/mobilitylabs/user/login/",
-        "GetArriveStopURL": "https://openapi.emtmadrid.es/v1/transport/busemtmad/stops/<stopId>/arrives/"
+        "GetArriveStopURL": "https://openapi.emtmadrid.es/v1/transport/busemtmad/stops/<stopId>/arrives/",
+        "GetArriveStopJSON": {
+            "cultureInfo": "",
+            "Text_StopRequired_YN": "",
+            "Text_EstimationsRequired_YN": "Y",
+            "Text_IncidencesRequired_YN": "",
+            "DateTime_Referenced_Incidencies_YYYYMMDD": ""
+        }
     }
 }

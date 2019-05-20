@@ -167,13 +167,13 @@ def send_parada(message):
             if arrive_stop:
                 reply = data.PARADA_SUCCESSFUL.replace(
                     "<stopId>", "#" + text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER
-                if(len(reply) > 5000):
+                if(len(reply) > 3000):
                     splitted_reply = reply.split("\n\n")
                     new_reply = ""
                     for fragment in splitted_reply:
                         if not new_reply:
                             new_reply = fragment
-                        elif(len(new_reply + "\n\n" + fragment) > 5000):
+                        elif(len(new_reply + "\n\n" + fragment) > 3000):
                             bot.reply_to(message, new_reply)
                             new_reply = fragment
                         else:
@@ -211,13 +211,13 @@ def send_bicimad(message):
             data.EMTMADRID_GETBICIMADSTATIONSURL, token)
         bicimad = bicimad_response["data"]
         reply = data.BICIMAD + process_bicimad_response(bicimad)
-        if(len(reply) > 5000):
+        if(len(reply) > 3000):
             splitted_reply = reply.split("\n\n")
             new_reply = ""
             for fragment in splitted_reply:
                 if not new_reply:
                     new_reply = fragment
-                elif(len(new_reply + "\n\n" + fragment) > 5000):
+                elif(len(new_reply + "\n\n" + fragment) > 3000):
                     bot.reply_to(message, new_reply)
                     new_reply = fragment
                 else:
@@ -252,13 +252,13 @@ def send_parkings(message):
             data.EMTMADRID_GETPARKINGSSTATUSURL, token)
         parkings = parkings_response["data"]
         reply = data.PARKINGS + process_parkings_response(parkings)
-        if(len(reply) > 5000):
+        if(len(reply) > 3000):
             splitted_reply = reply.split("\n\n")
             new_reply = ""
             for fragment in splitted_reply:
                 if not new_reply:
                     new_reply = fragment
-                elif(len(new_reply + "\n\n" + fragment) > 5000):
+                elif(len(new_reply + "\n\n" + fragment) > 3000):
                     bot.reply_to(message, new_reply)
                     new_reply = fragment
                 else:

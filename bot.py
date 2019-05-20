@@ -3,14 +3,14 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/05/16
+# Last update:  2019/05/20
 
 import os
 import telebot
 import logger
 import more_itertools
 
-from emt_madrid import get_token, get_arrive_stop
+from emt_madrid import get_token, get_arrive_stop, get_generic
 from data_loader import DataLoader
 from flask import Flask, request
 from flask_sslify import SSLify
@@ -33,15 +33,15 @@ server = Flask(__name__)
 if 'DYNO' in os.environ:  # only trigger SSLify if the app is running on Heroku
     sslify = SSLify(server)
 
+
 def log_message(message):
     logger.info("Received: \"" + message.text + "\" from " + message.from_user.first_name +
-            " (ID: " + str(message.from_user.id) + ") " + "[Chat ID: " + str(message.chat.id) + "].")
+                " (ID: " + str(message.from_user.id) + ") " + "[Chat ID: " + str(message.chat.id) + "].")
+
 
 def log_emt_error(response):
     logger.info("Error in EMT Madrid API request:\n" + response)
 
-def make_arrival_line(arrival):
-    return "\n\nLínea " + arrival["line"] + " (" + arrival["destination"] + "):\n    " + arrival["estimateArrive"]
 
 def remove_command(text):
     # '/command' and 'the rest of the message'
@@ -49,6 +49,11 @@ def remove_command(text):
         return ""
     else:
         return text.split(" ", 1)[1]
+
+
+def make_arrival_line(arrival):
+    return "\n\nLínea " + arrival["line"] + " (" + arrival["destination"] + "):\n    " + arrival["estimateArrive"]
+
 
 def process_time_left(time_left):
     if(str(time_left).isdecimal()):
@@ -63,24 +68,68 @@ def process_time_left(time_left):
         return "  --:--min"
 
 # https://stackoverflow.com/questions/4391697/find-the-index-of-a-dict-within-a-list-by-matching-the-dicts-value
+
+
 def sort_arrivals(arrivals):
     arrivals_sorted = []
     for arrival in arrivals:
-        index_list = list(more_itertools.locate(arrivals_sorted, pred=lambda d: d["line"] == arrival["line"]))
-        arrival["estimateArrive"] = process_time_left(arrival["estimateArrive"])
-        if(index_list): # False if empty
-            arrivals_sorted[index_list[0]]["estimateArrive"] += "    " + arrival["estimateArrive"]
+        index_list = list(more_itertools.locate(
+            arrivals_sorted, pred=lambda d: d["line"] == arrival["line"]))
+        arrival["estimateArrive"] = process_time_left(
+            arrival["estimateArrive"])
+        if(index_list):  # False if empty
+            arrivals_sorted[index_list[0]
+                            ]["estimateArrive"] += "    " + arrival["estimateArrive"]
         else:
             arrivals_sorted.append(arrival)
         del index_list
     return arrivals_sorted
 
-def process_response(arrivals):
+
+def process_arrival_response(arrivals):
     result = ""
-    arrivals = sort_arrivals(sorted(arrivals, key=lambda d: (d["estimateArrive"])))
+    arrivals = sort_arrivals(
+        sorted(arrivals, key=lambda d: (d["estimateArrive"])))
     for arrival in arrivals:
         result += make_arrival_line(arrival)
     return result + "\n\n"
+
+
+def make_bicimad_line(station):
+    line = station["name"] + "(#" + station["id"] + ")"
+    if bool(station["activate"]):
+        line += ": **OPERATIVA**"
+        line += "\n\tHuecos disponibles: " + station["free_bases"]
+        line += "\n\tBicMad disponibles: " + station["dock_bikes"]
+    else:
+        line += ": **NO OPERATIVA**"
+    line += "\n"
+    return line
+
+
+def process_bicimad_response(bicimad):
+    result = ""
+    for station in bicimad:
+        result += make_bicimad_line(station)
+    return result
+
+
+def make_parking_line(parking):
+    line = parking["name"] + "(#" + parking["id"] + ")"
+    line += "\n\tHuecos libres: "
+    if parking["freeParking"] is None:
+        line += "No disponible"
+    else:
+        line += parking["freeParking"] + " plazas libres"
+    line += "\n"
+    return line
+
+
+def process_parkings_response(parkings):
+    result = ""
+    for parking in parkings:
+        result += make_parking_line(parking)
+    return result
 
 
 # Start command handler
@@ -99,20 +148,23 @@ def send_hola(message):
 @bot.message_handler(commands=['parada'])
 def send_parada(message):
     log_message(message)
-    text_with_no_command = remove_command(message.text)
-    if(str(message.chat.id) in data.EMTMADRID_ARRIVE_LIST and text_with_no_command.upper() in
+    text = remove_command(message.text)
+    if(str(message.chat.id) in data.EMTMADRID_ARRIVE_LIST and text.upper() in
             data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)]):
-        text_with_no_command = data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)][text_with_no_command.upper()]
-    if(text_with_no_command == "" or not text_with_no_command.isdecimal()):
-            bot.reply_to(message, data.PARADA_BAD_SPECIFIED)
+        text = data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)][text.upper()]
+    if(text == "" or not text.isdecimal()):
+        bot.reply_to(message, data.PARADA_BAD_SPECIFIED)
     else:
         try:
-            token_response = get_token(data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
+            token_response = get_token(
+                data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
             token = token_response["data"][0]["accessToken"]
-            arrive_stop_response = get_arrive_stop(data.EMTMADRID_GETARRIVESTOPURL, token, text_with_no_command, data.EMTMADRID_GETARRIVESTOPJSON)
+            arrive_stop_response = get_arrive_stop(
+                data.EMTMADRID_GETARRIVESTOPURL, token, text, data.EMTMADRID_GETARRIVESTOPJSON)
             arrive_stop = arrive_stop_response["data"][0]["Arrive"]
             if arrive_stop:
-                reply = data.PARADA_SUCCESSFUL + process_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER
+                reply = data.PARADA_SUCCESSFUL.replace(
+                    "<stopId>", "#" + text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER
                 bot.reply_to(message, reply)
                 del reply
             else:
@@ -126,11 +178,67 @@ def send_parada(message):
             except:
                 log += "\nSome data is missing."
             log_emt_error(log)
-            bot.reply_to(message, data.PARADA_FAIL)
+            bot.reply_to(message, data.REQUEST_FAIL)
             try:
-                del log, token_response, token, arrive_stop_response, arrive_stop
+                del log, token_response, token, arrive_stop_response, arrive_stop, reply
             except:
                 pass
+
+# Bicimad command handler
+@bot.message_handler(commands=['bicimad'])
+def send_bicimad(message):
+    log_message(message)
+    try:
+        token_response = get_token(
+            data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
+        token = token_response["data"][0]["accessToken"]
+        bicimad_response = get_generic(
+            data.EMTMADRID_GETBICIMADSTATIONSURL, token)
+        bicimad = bicimad_response["data"]
+        reply = data.BICIMAD + process_bicimad_response(bicimad)
+        bot.reply_to(message, reply)
+        del reply, token_response, token, bicimad_response, bicimad
+    except:
+        log = ""
+        try:
+            log += (str(token_response))
+            log += (str(bicimad_response))
+        except:
+            log += "\nSome data is missing."
+        log_emt_error(log)
+        bot.reply_to(message, data.REQUEST_FAIL)
+        try:
+            del log, token_response, token, bicimad_response, bicimad, reply
+        except:
+            pass
+
+# Parkings command handler
+@bot.message_handler(commands=['parkings'])
+def send_parkings(message):
+    log_message(message)
+    try:
+        token_response = get_token(
+            data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
+        token = token_response["data"][0]["accessToken"]
+        parkings_response = get_generic(
+            data.EMTMADRID_GETPARKINGSSTATUSURL, token)
+        parkings = parkings_response["data"]
+        reply = data.PARKINGS + process_parkings_response(parkings)
+        bot.reply_to(message, reply)
+        del reply, token_response, token, parkings_response, parkings
+    except:
+        log = ""
+        try:
+            log += (str(token_response))
+            log += (str(parkings_response))
+        except:
+            log += "\nSome data is missing."
+        log_emt_error(log)
+        bot.reply_to(message, data.REQUEST_FAIL)
+        try:
+            del log, token_response, token, parkings_response, parkings, reply
+        except:
+            pass
 
 # Help command handler
 @bot.message_handler(commands=['help'])
@@ -141,8 +249,10 @@ def send_help(message):
 
 @server.route('/' + data.TOKEN, methods=['POST'])
 def getMessage():
-    bot.process_new_updates([telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
+    bot.process_new_updates(
+        [telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200
+
 
 @server.route("/")
 def webhook():

@@ -219,7 +219,8 @@ def send_bicimad(message):
                 data.EMTMADRID_GETBICIMADSTATIONSURL, token, text)
             bicimad = bicimad_response["data"]
             if bicimad:
-                reply = data.BICIMAD_SUCCESSFUL + process_bicimad_response(bicimad[0])
+                reply = data.BICIMAD_SUCCESSFUL.replace(
+                    "<idStation", text) + process_bicimad_response(bicimad[0])
                 bot.reply_to(message, reply)
                 del reply
             else:

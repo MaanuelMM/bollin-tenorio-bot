@@ -96,11 +96,11 @@ def process_arrival_response(arrivals):
 
 
 def make_bicimad_line(station):
-    line = station["name"] + "(#" + station["id"] + ")"
+    line = station["name"] + "(#" + str(station["id"]) + ")"
     if bool(station["activate"]):
         line += ": **OPERATIVA**"
-        line += "\n\tHuecos disponibles: " + station["free_bases"]
-        line += "\n\tBicMad disponibles: " + station["dock_bikes"]
+        line += "\n\tHuecos disponibles: " + str(station["free_bases"])
+        line += "\n\tBicMad disponibles: " + str(station["dock_bikes"])
     else:
         line += ": **NO OPERATIVA**"
     line += "\n"
@@ -115,12 +115,12 @@ def process_bicimad_response(bicimad):
 
 
 def make_parking_line(parking):
-    line = parking["name"] + "(#" + parking["id"] + ")"
+    line = parking["name"] + "(#" + str(parking["id"]) + ")"
     line += "\n\tHuecos libres: "
     if parking["freeParking"] is None:
         line += "No disponible"
     else:
-        line += parking["freeParking"] + " plazas libres"
+        line += str(parking["freeParking"]) + " plazas libres"
     line += "\n"
     return line
 

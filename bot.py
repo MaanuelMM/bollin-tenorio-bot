@@ -96,7 +96,8 @@ def process_arrival_response(arrivals):
 
 
 def make_bicimad_line(station):
-    line = station["name"] + "(#" + str(station["id"]) + ")"
+    line = "\n"
+    line += station["name"] + " (#" + str(station["id"]) + ")"
     if bool(station["activate"]):
         line += ": **OPERATIVA**"
         line += "\n\tHuecos disponibles: " + str(station["free_bases"])
@@ -108,25 +109,26 @@ def make_bicimad_line(station):
 
 
 def process_bicimad_response(bicimad):
-    result = ""
+    result = "\n"
     for station in bicimad:
         result += make_bicimad_line(station)
     return result
 
 
 def make_parking_line(parking):
-    line = parking["name"] + "(#" + str(parking["id"]) + ")"
-    line += "\n\tHuecos libres: "
+    line = "\n"
+    line += parking["name"] + " (#" + str(parking["id"]) + ")"
+    line += "\n\tPlazas libres: "
     if parking["freeParking"] is None:
         line += "No disponible"
     else:
-        line += str(parking["freeParking"]) + " plazas libres"
+        line += str(parking["freeParking"])
     line += "\n"
     return line
 
 
 def process_parkings_response(parkings):
-    result = ""
+    result = "\n"
     for parking in parkings:
         result += make_parking_line(parking)
     return result
@@ -165,7 +167,20 @@ def send_parada(message):
             if arrive_stop:
                 reply = data.PARADA_SUCCESSFUL.replace(
                     "<stopId>", "#" + text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER
-                bot.reply_to(message, reply)
+                if(len(reply) > 5000):
+                    splitted_reply = reply.split("\n\n")
+                    new_reply = ""
+                    for fragment in splitted_reply:
+                        if not new_reply:
+                            new_reply = fragment
+                        elif(len(new_reply + "\n\n" + fragment) > 5000):
+                            bot.reply_to(message, new_reply)
+                            new_reply = fragment
+                        else:
+                            new_reply += "\n\n" + fragment
+                    del new_reply
+                else:
+                    bot.reply_to(message, reply)
                 del reply
             else:
                 bot.reply_to(message, data.PARADA_NO_ESTIMATION)
@@ -180,7 +195,7 @@ def send_parada(message):
             log_emt_error(log)
             bot.reply_to(message, data.REQUEST_FAIL)
             try:
-                del log, token_response, token, arrive_stop_response, arrive_stop, reply
+                del log, token_response, token, arrive_stop_response, arrive_stop, reply, new_reply
             except:
                 pass
 
@@ -196,7 +211,20 @@ def send_bicimad(message):
             data.EMTMADRID_GETBICIMADSTATIONSURL, token)
         bicimad = bicimad_response["data"]
         reply = data.BICIMAD + process_bicimad_response(bicimad)
-        bot.reply_to(message, reply)
+        if(len(reply) > 5000):
+            splitted_reply = reply.split("\n\n")
+            new_reply = ""
+            for fragment in splitted_reply:
+                if not new_reply:
+                    new_reply = fragment
+                elif(len(new_reply + "\n\n" + fragment) > 5000):
+                    bot.reply_to(message, new_reply)
+                    new_reply = fragment
+                else:
+                    new_reply += "\n\n" + fragment
+            del new_reply
+        else:
+            bot.reply_to(message, reply)
         del reply, token_response, token, bicimad_response, bicimad
     except:
         log = ""
@@ -208,7 +236,7 @@ def send_bicimad(message):
         log_emt_error(log)
         bot.reply_to(message, data.REQUEST_FAIL)
         try:
-            del log, token_response, token, bicimad_response, bicimad, reply
+            del log, token_response, token, bicimad_response, bicimad, reply, new_reply
         except:
             pass
 
@@ -224,7 +252,20 @@ def send_parkings(message):
             data.EMTMADRID_GETPARKINGSSTATUSURL, token)
         parkings = parkings_response["data"]
         reply = data.PARKINGS + process_parkings_response(parkings)
-        bot.reply_to(message, reply)
+        if(len(reply) > 5000):
+            splitted_reply = reply.split("\n\n")
+            new_reply = ""
+            for fragment in splitted_reply:
+                if not new_reply:
+                    new_reply = fragment
+                elif(len(new_reply + "\n\n" + fragment) > 5000):
+                    bot.reply_to(message, new_reply)
+                    new_reply = fragment
+                else:
+                    new_reply += "\n\n" + fragment
+            del new_reply
+        else:
+            bot.reply_to(message, reply)
         del reply, token_response, token, parkings_response, parkings
     except:
         log = ""
@@ -236,7 +277,7 @@ def send_parkings(message):
         log_emt_error(log)
         bot.reply_to(message, data.REQUEST_FAIL)
         try:
-            del log, token_response, token, parkings_response, parkings, reply
+            del log, token_response, token, parkings_response, parkings, reply, new_reply
         except:
             pass
 

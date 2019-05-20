@@ -43,7 +43,9 @@ class DataLoader:
             self.PARADA_SUCCESSFUL_DISCLAIMER = loaded_data["Bot"]["parada_successful_disclaimer"]
             self.PARADA_BAD_SPECIFIED = loaded_data["Bot"]["parada_bad_specified"]
             self.PARADA_NO_ESTIMATION = loaded_data["Bot"]["parada_no_estimation"]
-            self.BICIMAD = loaded_data["Bot"]["bicimad"]
+            self.BICIMAD_SUCCESSFUL = loaded_data["Bot"]["bicimad_successful"]
+            self.BICIMAD_BAD_SPECIFIED = loaded_data["Bot"]["bicimad_bad_specified"]
+            self.BICIMAD_NO_INFO = loaded_data["Bot"]["bicimad_no_info"]
             self.PARKINGS = loaded_data["Bot"]["parkings"]
             self.REQUEST_FAIL = loaded_data["Bot"]["request_fail"]
             # Get EMT Madrid API Data

@@ -67,10 +67,9 @@ def process_time_left(time_left):
     else:
         return "  --:--min"
 
-# https://stackoverflow.com/questions/4391697/find-the-index-of-a-dict-within-a-list-by-matching-the-dicts-value
-
 
 def sort_arrivals(arrivals):
+    # https://stackoverflow.com/questions/4391697/find-the-index-of-a-dict-within-a-list-by-matching-the-dicts-value
     arrivals_sorted = []
     for arrival in arrivals:
         index_list = list(more_itertools.locate(
@@ -95,24 +94,29 @@ def process_arrival_response(arrivals):
     return result + "\n\n"
 
 
-def make_bicimad_line(station):
+def process_bicimad_response(bicimad):
     line = "\n"
-    line += station["name"] + " (#" + str(station["id"]) + ")"
-    if bool(station["activate"]):
-        line += ": **OPERATIVA**"
-        line += "\n\tHuecos disponibles: " + str(station["free_bases"])
-        line += "\n\tBicMad disponibles: " + str(station["dock_bikes"])
+    line += bicimad["name"] + " (#" + str(bicimad["id"]) + ")"
+    if bool(bicimad["activate"]):
+        line += ":  🟢OPERATIVA🟢"
+        line += "\n"
+        line += "\n  Huecos disponibles: " + str(bicimad["free_bases"])
+        line += "\n  BicMad disponibles: " + str(bicimad["dock_bikes"])
+        line += "\n  Nivel de ocupación: "
+        if(bicimad["light"] >= 2):
+            line += "🟩ALTA🟩"
+        elif(bicimad["light"] > 1):
+            line += "🟧MEDIA🟧"
+        else:
+            line += "🟩BAJA🟩"
     else:
-        line += ": **NO OPERATIVA**"
+        line += ":  🔴INOPERATIVA🔴"
+    line += "\n"
+    line += "\n  🗺Ubicación: " + "https://google.com/maps/search/?api=1&query=" + \
+        bicimad["geometry"]["coordinates"][1] + "," + \
+            bicimad["geometry"]["coordinates"][0]
     line += "\n"
     return line
-
-
-def process_bicimad_response(bicimad):
-    result = "\n"
-    for station in bicimad:
-        result += make_bicimad_line(station)
-    return result
 
 
 def make_parking_line(parking):
@@ -120,7 +124,7 @@ def make_parking_line(parking):
     line += parking["name"] + " (#" + str(parking["id"]) + ")"
     line += "\n\tPlazas libres: "
     if parking["freeParking"] is None:
-        line += "No disponible"
+        line += "None"
     else:
         line += str(parking["freeParking"])
     line += "\n"
@@ -166,7 +170,7 @@ def send_parada(message):
             arrive_stop = arrive_stop_response["data"][0]["Arrive"]
             if arrive_stop:
                 reply = data.PARADA_SUCCESSFUL.replace(
-                    "<stopId>", "#" + text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER
+                    "<stopId>", text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER
                 if(len(reply) > 3000):
                     splitted_reply = reply.split("\n\n")
                     new_reply = ""
@@ -203,42 +207,37 @@ def send_parada(message):
 @bot.message_handler(commands=['bicimad'])
 def send_bicimad(message):
     log_message(message)
-    try:
-        token_response = get_token(
-            data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
-        token = token_response["data"][0]["accessToken"]
-        bicimad_response = get_generic(
-            data.EMTMADRID_GETBICIMADSTATIONSURL, token)
-        bicimad = bicimad_response["data"]
-        reply = data.BICIMAD + process_bicimad_response(bicimad)
-        if(len(reply) > 3000):
-            splitted_reply = reply.split("\n\n")
-            new_reply = ""
-            for fragment in splitted_reply:
-                if not new_reply:
-                    new_reply = fragment
-                elif(len(new_reply + "\n\n" + fragment) > 3000):
-                    bot.reply_to(message, new_reply)
-                    new_reply = fragment
-                else:
-                    new_reply += "\n\n" + fragment
-            del new_reply
-        else:
-            bot.reply_to(message, reply)
-        del reply, token_response, token, bicimad_response, bicimad
-    except:
-        log = ""
+    text = remove_command(message.text)
+    if(text == "" or not text.isdecimal()):
+        bot.reply_to(message, data.BICIMAD_BAD_SPECIFIED)
+    else:
         try:
-            log += (str(token_response))
-            log += (str(bicimad_response))
+            token_response = get_token(
+                data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
+            token = token_response["data"][0]["accessToken"]
+            bicimad_response = get_generic(
+                data.EMTMADRID_GETBICIMADSTATIONSURL, token)
+            bicimad = bicimad_response["data"]
+            if bicimad:
+                reply = data.BICIMAD + process_bicimad_response(bicimad)
+                bot.reply_to(message, reply)
+                del reply
+            else:
+                bot.reply_to(message, data.BICIMAD_NO_INFO)
+            del token_response, token, bicimad_response, bicimad
         except:
-            log += "\nSome data is missing."
-        log_emt_error(log)
-        bot.reply_to(message, data.REQUEST_FAIL)
-        try:
-            del log, token_response, token, bicimad_response, bicimad, reply, new_reply
-        except:
-            pass
+            log = ""
+            try:
+                log += (str(token_response))
+                log += (str(bicimad_response))
+            except:
+                log += "\nSome data is missing."
+            log_emt_error(log)
+            bot.reply_to(message, data.REQUEST_FAIL)
+            try:
+                del log, token_response, token, bicimad_response, bicimad, reply
+            except:
+                pass
 
 # Parkings command handler
 @bot.message_handler(commands=['parkings'])

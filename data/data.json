@@ -3,11 +3,13 @@
         "start": "Hola a todos, mis papirrines <3",
         "hola": "Hola, ",
         "help": "Lo siento si funciono mal o estoy muy limitado en funciones, pero estoy trabajando para mejorar día a día :-)\n\nSi desea ver todo lo que puedo hacer, escriba \"\\\" (barrita invertida) para ver la lista de comandos disponibles.",
-        "parada_successful": "He aquí los resultados de la parada <stopId>:",
+        "parada_successful": "He aquí los resultados de la parada #<stopId>:",
         "parada_successful_disclaimer": "Nota: si falta alguna línea, significa que no existen estimaciones para esta.",
         "parada_bad_specified": "Error, no ha introducido correctamente la parada a consultar.",
         "parada_no_estimation": "Lo siento, no existen estimaciones para la parada indicada :'(",
-        "bicimad": "A continuación se muestran los estados de las estaciones de BiciMad:",
+        "bicimad_successful": "A continuación se muestra el estado de la estación BiciMAD #<idStation>:",
+        "bicimad_bad_specified": "Error, no ha introducido correctamente la estación BiciMAD a consultar.",
+        "bicimad_no_info": "Lo siento, no existe información de la estación BiciMAD indicada :'(",
         "parkings": "A continuación se muestra la disponibilidad de los párkings de la ciudad de Madrid:",
         "request_fail": "Ha habido un error a la hora de realizar la consulta.\n\nContacte con el administrador del bot para tratar de solventar el problema."
     },
@@ -21,7 +23,7 @@
             "Text_IncidencesRequired_YN": "",
             "DateTime_Referenced_Incidencies_YYYYMMDD": ""
         },
-        "GetBicimadStationsURL": "https://openapi.emtmadrid.es/v1/transport/bicimad/stations/",
+        "GetBicimadStationsURL": "https://openapi.emtmadrid.es/v1/transport/bicimad/stations/<idStation>/",
         "GetParkingsStatusURL": "https://openapi.emtmadrid.es/v1/citymad/places/parkings/availability/"
     }
 }

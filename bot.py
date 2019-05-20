@@ -10,7 +10,7 @@ import telebot
 import logger
 import more_itertools
 
-from emt_madrid import get_token, get_arrive_stop, get_generic
+from emt_madrid import get_token, get_arrive_stop, get_bicimad, get_parkings
 from data_loader import DataLoader
 from flask import Flask, request
 from flask_sslify import SSLify
@@ -215,8 +215,8 @@ def send_bicimad(message):
             token_response = get_token(
                 data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
             token = token_response["data"][0]["accessToken"]
-            bicimad_response = get_generic(
-                data.EMTMADRID_GETBICIMADSTATIONSURL, token)
+            bicimad_response = get_bicimad(
+                data.EMTMADRID_GETBICIMADSTATIONSURL, token, text)
             bicimad = bicimad_response["data"]
             if bicimad:
                 reply = data.BICIMAD + process_bicimad_response(bicimad)
@@ -247,7 +247,7 @@ def send_parkings(message):
         token_response = get_token(
             data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
         token = token_response["data"][0]["accessToken"]
-        parkings_response = get_generic(
+        parkings_response = get_parkings(
             data.EMTMADRID_GETPARKINGSSTATUSURL, token)
         parkings = parkings_response["data"]
         reply = data.PARKINGS + process_parkings_response(parkings)

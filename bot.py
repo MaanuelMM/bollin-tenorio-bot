@@ -3,7 +3,7 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/05/20
+# Last update:  2019/05/21
 
 import os
 import telebot
@@ -99,7 +99,7 @@ def process_bicimad_response(bicimad):
     line += "Estación BiciMAD: " + \
         bicimad["name"] + " (#" + str(bicimad["id"]) + ")"
     if bool(bicimad["activate"]):
-        line += ":  \U0001F7E2OPERATIVA\U0001F7E2"
+        line += "  \U0001F7E2OPERATIVA\U0001F7E2"
         line += "\n"
         line += "\n  Huecos disponibles: " + str(bicimad["free_bases"])
         line += "\n  Bicicletas disponibles: " + str(bicimad["dock_bikes"])
@@ -111,7 +111,7 @@ def process_bicimad_response(bicimad):
         else:
             line += "\U0001F7E9BAJA\U0001F7E9"
     else:
-        line += ":  \U0001F534INOPERATIVA\U0001F534"
+        line += "  \U0001F534INOPERATIVA\U0001F534"
     line += "\n"
     line += "\n\U0001F4CDUbicación: https://google.com/maps/search/?api=1&query=" + \
         str(bicimad["geometry"]["coordinates"][1]) + "," + \
@@ -221,7 +221,7 @@ def send_bicimad(message):
             bicimad = bicimad_response["data"]
             if bicimad:
                 reply = process_bicimad_response(bicimad[0])
-                bot.reply_to(message, reply)
+                bot.reply_to(message, reply.encode())
                 del reply
             else:
                 bot.reply_to(message, data.BICIMAD_NO_INFO)

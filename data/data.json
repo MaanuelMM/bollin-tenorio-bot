@@ -7,7 +7,6 @@
         "parada_successful_disclaimer": "Nota: si falta alguna línea, significa que no existen estimaciones para esta.",
         "parada_bad_specified": "Error, no ha introducido correctamente la parada a consultar.",
         "parada_no_estimation": "Lo siento, no existen estimaciones para la parada indicada :'(",
-        "bicimad_successful": "A continuación se muestra el estado de la estación BiciMAD #<idStation>:",
         "bicimad_bad_specified": "Error, no ha introducido correctamente la estación BiciMAD a consultar.",
         "bicimad_no_info": "Lo siento, no existe información de la estación BiciMAD indicada :'(",
         "parkings": "A continuación se muestra la disponibilidad de los párkings de la ciudad de Madrid:",

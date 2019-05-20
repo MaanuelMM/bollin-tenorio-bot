@@ -96,12 +96,13 @@ def process_arrival_response(arrivals):
 
 def process_bicimad_response(bicimad):
     line = "\n"
-    line += bicimad["name"] + " (#" + str(bicimad["id"]) + ")"
+    line += "Estación BiciMAD: " + \
+        bicimad["name"] + " (#" + str(bicimad["id"]) + ")"
     if bool(bicimad["activate"]):
         line += ":  🟢OPERATIVA🟢"
         line += "\n"
         line += "\n  Huecos disponibles: " + str(bicimad["free_bases"])
-        line += "\n  BicMad disponibles: " + str(bicimad["dock_bikes"])
+        line += "\n  Bicicletas disponibles: " + str(bicimad["dock_bikes"])
         line += "\n  Nivel de ocupación: "
         if(bicimad["light"] >= 2):
             line += "🟩ALTA🟩"
@@ -112,7 +113,8 @@ def process_bicimad_response(bicimad):
     else:
         line += ":  🔴INOPERATIVA🔴"
     line += "\n"
-    line += "\n  🗺Ubicación: " + "https://google.com/maps/search/?api=1&query=" + \
+    line += "\n📍Ubicación:"
+    line += "\n  https://google.com/maps/search/?api=1&query=" + \
         str(bicimad["geometry"]["coordinates"][1]) + "," + \
         str(bicimad["geometry"]["coordinates"][0])
     line += "\n"
@@ -219,9 +221,8 @@ def send_bicimad(message):
                 data.EMTMADRID_GETBICIMADSTATIONSURL, token, text)
             bicimad = bicimad_response["data"]
             if bicimad:
-                reply = data.BICIMAD_SUCCESSFUL.replace(
-                    "<idStation", text) + process_bicimad_response(bicimad[0])
-                bot.reply_to(message, reply)
+                reply = process_bicimad_response(bicimad[0])
+                bot.reply_to(message, reply.encode("utf-8"))
                 del reply
             else:
                 bot.reply_to(message, data.BICIMAD_NO_INFO)

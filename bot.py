@@ -217,7 +217,7 @@ def send_bicimad(message):
             token = token_response["data"][0]["accessToken"]
             bicimad_response = get_bicimad(
                 data.EMTMADRID_GETBICIMADSTATIONSURL, token, text)
-            bicimad = bicimad_response["data"]
+            bicimad = bicimad_response["data"][0]
             if bicimad:
                 reply = data.BICIMAD + process_bicimad_response(bicimad)
                 bot.reply_to(message, reply)

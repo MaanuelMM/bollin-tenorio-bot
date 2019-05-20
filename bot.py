@@ -113,8 +113,8 @@ def process_bicimad_response(bicimad):
         line += ":  🔴INOPERATIVA🔴"
     line += "\n"
     line += "\n  🗺Ubicación: " + "https://google.com/maps/search/?api=1&query=" + \
-        bicimad["geometry"]["coordinates"][1] + "," + \
-            bicimad["geometry"]["coordinates"][0]
+        str(bicimad["geometry"]["coordinates"][1]) + "," + \
+        str(bicimad["geometry"]["coordinates"][0])
     line += "\n"
     return line
 

@@ -99,22 +99,21 @@ def process_bicimad_response(bicimad):
     line += "Estación BiciMAD: " + \
         bicimad["name"] + " (#" + str(bicimad["id"]) + ")"
     if bool(bicimad["activate"]):
-        line += ":  🟢OPERATIVA🟢"
+        line += ":  \U0001F7E2OPERATIVA\U0001F7E2"
         line += "\n"
         line += "\n  Huecos disponibles: " + str(bicimad["free_bases"])
         line += "\n  Bicicletas disponibles: " + str(bicimad["dock_bikes"])
         line += "\n  Nivel de ocupación: "
         if(bicimad["light"] >= 2):
-            line += "🟩ALTA🟩"
+            line += "\U0001F7E5ALTA\U0001F7E5"
         elif(bicimad["light"] > 1):
-            line += "🟧MEDIA🟧"
+            line += "\U0001F7E7MEDIA\U0001F7E7"
         else:
-            line += "🟩BAJA🟩"
+            line += "\U0001F7E9BAJA\U0001F7E9"
     else:
-        line += ":  🔴INOPERATIVA🔴"
+        line += ":  \U0001F534INOPERATIVA\U0001F534"
     line += "\n"
-    line += "\n📍Ubicación:"
-    line += "\n  https://google.com/maps/search/?api=1&query=" + \
+    line += "\n\U0001F4CDUbicación: https://google.com/maps/search/?api=1&query=" + \
         str(bicimad["geometry"]["coordinates"][1]) + "," + \
         str(bicimad["geometry"]["coordinates"][0])
     line += "\n"
@@ -222,7 +221,7 @@ def send_bicimad(message):
             bicimad = bicimad_response["data"]
             if bicimad:
                 reply = process_bicimad_response(bicimad[0])
-                bot.reply_to(message, reply.encode("utf-8"))
+                bot.reply_to(message, reply)
                 del reply
             else:
                 bot.reply_to(message, data.BICIMAD_NO_INFO)

@@ -217,9 +217,9 @@ def send_bicimad(message):
             token = token_response["data"][0]["accessToken"]
             bicimad_response = get_bicimad(
                 data.EMTMADRID_GETBICIMADSTATIONSURL, token, text)
-            bicimad = bicimad_response["data"][0]
+            bicimad = bicimad_response["data"]
             if bicimad:
-                reply = data.BICIMAD + process_bicimad_response(bicimad)
+                reply = data.BICIMAD_SUCCESSFUL + process_bicimad_response(bicimad[0])
                 bot.reply_to(message, reply)
                 del reply
             else:
@@ -238,6 +238,7 @@ def send_bicimad(message):
                 del log, token_response, token, bicimad_response, bicimad, reply
             except:
                 pass
+    del text
 
 # Parkings command handler
 @bot.message_handler(commands=['parkings'])

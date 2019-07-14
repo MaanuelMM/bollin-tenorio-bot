@@ -3,7 +3,7 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/05/21
+# Last update:  2019/07/14
 
 import os
 import telebot
@@ -43,12 +43,19 @@ def log_emt_error(response):
     logger.info("Error in EMT Madrid API request:\n" + response)
 
 
-def remove_command(text):
+def get_text(text):
     # '/command' and 'the rest of the message'
     if(len(text.split(" ", 1)) == 1):
         return ""
     else:
         return text.split(" ", 1)[1]
+
+
+def is_integer(string):
+    try:
+        return int(string)
+    except:
+        return False
 
 
 def make_arrival_line(arrival):
@@ -139,6 +146,82 @@ def process_parkings_response(parkings):
     return result
 
 
+def message_sender(message, reply):
+    if(len(reply) > 3000):
+        splitted_reply = reply.split("\n\n")
+        new_reply = ""
+        for fragment in splitted_reply:
+            if not new_reply:
+                new_reply = fragment
+            elif(len(new_reply + "\n\n" + fragment) > 3000):
+                bot.reply_to(message, new_reply)
+                new_reply = fragment
+            else:
+                new_reply += "\n\n" + fragment
+        del new_reply
+    else:
+        bot.reply_to(message, reply)
+
+
+def get_token_clean():
+    try:
+        token_response = get_token(
+            data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
+        token = token_response["data"][0]["accessToken"]
+        del token_response
+    except:
+        try:
+            log_emt_error(token_response)
+        except:
+            log_emt_error("Unable to get API response.")
+        raise
+    return token
+
+
+def get_arrive_stop_clean(stop_id):
+    try:
+        arrive_stop_response = get_arrive_stop(
+            data.EMTMADRID_GETARRIVESTOPURL, get_token_clean(), stop_id, data.EMTMADRID_GETARRIVESTOPJSON)
+        arrive_stop = arrive_stop_response["data"][0]["Arrive"]
+        del arrive_stop_response
+    except:
+        try:
+            log_emt_error(arrive_stop_response)
+        except:
+            log_emt_error("Unable to get API response.")
+        raise
+    return arrive_stop
+
+
+def get_bicimad_clean(station_id):
+    try:
+        bicimad_response = get_bicimad(
+            data.EMTMADRID_GETBICIMADSTATIONSURL, get_token_clean(), station_id)
+        bicimad = bicimad_response["data"]
+        del bicimad_response
+    except:
+        try:
+            log_emt_error(bicimad_response)
+        except:
+            log_emt_error("Unable to get API response.")
+        raise
+    return bicimad
+
+
+def get_parkings_clean():
+    try:
+        parkings_response = get_parkings(
+            data.EMTMADRID_GETPARKINGSSTATUSURL, get_token_clean())
+        parkings = parkings_response["data"]
+        del parkings_response
+    except:
+        try:
+            log_emt_error(parkings_response)
+        except:
+            log_emt_error("Unable to get API response.")
+        raise
+    return parkings
+
 # Start command handler
 @bot.message_handler(commands=['start'])
 def send_start(message):
@@ -155,90 +238,41 @@ def send_hola(message):
 @bot.message_handler(commands=['parada'])
 def send_parada(message):
     log_message(message)
-    text = remove_command(message.text)
+    text = get_text(message.text)
     if(str(message.chat.id) in data.EMTMADRID_ARRIVE_LIST and text.upper() in
             data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)]):
         text = data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)][text.upper()]
-    if(text == "" or not text.isdecimal()):
-        bot.reply_to(message, data.PARADA_BAD_SPECIFIED)
-    else:
+    if is_integer(text):
         try:
-            token_response = get_token(
-                data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
-            token = token_response["data"][0]["accessToken"]
-            arrive_stop_response = get_arrive_stop(
-                data.EMTMADRID_GETARRIVESTOPURL, token, text, data.EMTMADRID_GETARRIVESTOPJSON)
-            arrive_stop = arrive_stop_response["data"][0]["Arrive"]
+            arrive_stop = get_arrive_stop_clean(text)
             if arrive_stop:
-                reply = data.PARADA_SUCCESSFUL.replace(
-                    "<stopId>", text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER
-                if(len(reply) > 3000):
-                    splitted_reply = reply.split("\n\n")
-                    new_reply = ""
-                    for fragment in splitted_reply:
-                        if not new_reply:
-                            new_reply = fragment
-                        elif(len(new_reply + "\n\n" + fragment) > 3000):
-                            bot.reply_to(message, new_reply)
-                            new_reply = fragment
-                        else:
-                            new_reply += "\n\n" + fragment
-                    del new_reply
-                else:
-                    bot.reply_to(message, reply)
-                del reply
+                message_sender(message, data.PARADA_SUCCESSFUL.replace(
+                    "<stopId>", text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER)
             else:
                 bot.reply_to(message, data.PARADA_NO_ESTIMATION)
-            del token_response, token, arrive_stop_response, arrive_stop
-        except:
-            log = ""
-            try:
-                log += (str(token_response))
-                log += (str(arrive_stop_response))
-            except:
-                log += "\nSome data is missing."
-            log_emt_error(log)
-            bot.reply_to(message, data.REQUEST_FAIL)
-            try:
-                del log, token_response, token, arrive_stop_response, arrive_stop, reply, new_reply
-            except:
-                pass
+            del arrive_stop
+        except Exception as e:
+            logger.error(e, exc_info=True)
+    else:
+        bot.reply_to(message, data.PARADA_BAD_SPECIFIED)
+    del text
 
 # Bicimad command handler
 @bot.message_handler(commands=['bicimad'])
 def send_bicimad(message):
     log_message(message)
-    text = remove_command(message.text)
-    if(text == "" or not text.isdecimal()):
-        bot.reply_to(message, data.BICIMAD_BAD_SPECIFIED)
-    else:
+    text = get_text(message.text)
+    if is_integer(text):
         try:
-            token_response = get_token(
-                data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
-            token = token_response["data"][0]["accessToken"]
-            bicimad_response = get_bicimad(
-                data.EMTMADRID_GETBICIMADSTATIONSURL, token, text)
-            bicimad = bicimad_response["data"]
+            bicimad = get_bicimad_clean(text)
             if bicimad:
-                reply = process_bicimad_response(bicimad[0])
-                bot.reply_to(message, reply.encode())
-                del reply
+                message_sender(message, process_bicimad_response(bicimad[0]))
             else:
                 bot.reply_to(message, data.BICIMAD_NO_INFO)
-            del token_response, token, bicimad_response, bicimad
-        except:
-            log = ""
-            try:
-                log += (str(token_response))
-                log += (str(bicimad_response))
-            except:
-                log += "\nSome data is missing."
-            log_emt_error(log)
-            bot.reply_to(message, data.REQUEST_FAIL)
-            try:
-                del log, token_response, token, bicimad_response, bicimad, reply
-            except:
-                pass
+            del bicimad
+
+    else:
+        bot.reply_to(message, data.BICIMAD_BAD_SPECIFIED)
     del text
 
 # Parkings command handler
@@ -246,41 +280,11 @@ def send_bicimad(message):
 def send_parkings(message):
     log_message(message)
     try:
-        token_response = get_token(
-            data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
-        token = token_response["data"][0]["accessToken"]
-        parkings_response = get_parkings(
-            data.EMTMADRID_GETPARKINGSSTATUSURL, token)
-        parkings = parkings_response["data"]
-        reply = data.PARKINGS + process_parkings_response(parkings)
-        if(len(reply) > 3000):
-            splitted_reply = reply.split("\n\n")
-            new_reply = ""
-            for fragment in splitted_reply:
-                if not new_reply:
-                    new_reply = fragment
-                elif(len(new_reply + "\n\n" + fragment) > 3000):
-                    bot.reply_to(message, new_reply)
-                    new_reply = fragment
-                else:
-                    new_reply += "\n\n" + fragment
-            del new_reply
-        else:
-            bot.reply_to(message, reply)
-        del reply, token_response, token, parkings_response, parkings
-    except:
-        log = ""
-        try:
-            log += (str(token_response))
-            log += (str(parkings_response))
-        except:
-            log += "\nSome data is missing."
-        log_emt_error(log)
-        bot.reply_to(message, data.REQUEST_FAIL)
-        try:
-            del log, token_response, token, parkings_response, parkings, reply, new_reply
-        except:
-            pass
+        message_sender(message, data.PARKINGS +
+                       process_parkings_response(get_parkings_clean()))
+    except Exception as e:
+        logger.error(e, exc_info=True)
+
 
 # Help command handler
 @bot.message_handler(commands=['help'])

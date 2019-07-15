@@ -3,7 +3,7 @@
 # Authors:      CoreDumped-ETSISI, MaanuelMM
 # Credits:      CoreDumped-ETSISI
 # Created:      2019/02/14
-# Last update:  2019/05/20
+# Last update:  2019/07/15
 
 import json
 import os
@@ -28,12 +28,14 @@ class DataLoader:
             self.EMTMADRID_PASSWORD = os.environ.get('EMTMADRID_PASSWORD')
             self.EMTMADRID_ARRIVE_LIST = literal_eval(
                 os.environ.get('EMTMADRID_ARRIVE_LIST'))
+            logger.info("Successfully gotten Config Vars from server.")
+
+            # Get data from JSON file
+            logger.info("Loading data from JSON file...")
             with open('data/data.json', encoding="utf-8") as data:
                 loaded_data = json.load(data)
-        except:
-            logger.exception("Failed to load the data from the JSON file.")
-        else:
             logger.info("Successfully loaded the data from the JSON file.")
+
             # Get Bot Strings
             logger.info("Getting Bot Strings...")
             self.START = loaded_data["Bot"]["start"]
@@ -47,6 +49,8 @@ class DataLoader:
             self.BICIMAD_NO_INFO = loaded_data["Bot"]["bicimad_no_info"]
             self.PARKINGS = loaded_data["Bot"]["parkings"]
             self.REQUEST_FAIL = loaded_data["Bot"]["request_fail"]
+            logger.info("Successfully gotten Bot Strings")
+
             # Get EMT Madrid API Data
             logger.info("Getting EMT Madrid API Data...")
             self.EMTMADRID_GETTOKENSESSIONURL = loaded_data["EMTMadrid"]["GetTokenSessionURL"]
@@ -54,3 +58,19 @@ class DataLoader:
             self.EMTMADRID_GETARRIVESTOPJSON = loaded_data["EMTMadrid"]["GetArriveStopJSON"]
             self.EMTMADRID_GETBICIMADSTATIONSURL = loaded_data["EMTMadrid"]["GetBicimadStationsURL"]
             self.EMTMADRID_GETPARKINGSSTATUSURL = loaded_data["EMTMadrid"]["GetParkingsStatusURL"]
+            logger.info("Successfully gotten Bot Strings")
+
+        except:
+            logger.exception("Failed to load all the necessary data.")
+            raise
+        
+    '''        
+        finally:
+            try:
+                logger.info("Trying to close JSON file...")
+                data.close()
+                logger.info("Successfully closed JSON file...")
+            except:
+                logger.info("Failed to close JSON file...")
+                raise
+    '''

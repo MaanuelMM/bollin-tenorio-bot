@@ -6,8 +6,8 @@
 # Last update:  2019/07/15
 
 import os
-import telebot
 import logger
+import telebot
 import more_itertools
 
 from emt_madrid import get_token, get_arrive_stop, get_bicimad, get_parkings

@@ -109,6 +109,9 @@ def process_arrival_response(arrivals):
         result += make_arrival_line(arrival)
     return result + "\n\n"
 
+def map_link_maker(coordX, coordY):
+    return "https://google.com/maps/search/?api=1&query=" + str(coordX) + "," + str(coordY)
+
 def bicimad_light(light):
     switcher_light = {
         0: "\U0001F7E9BAJA\U0001F7E9",
@@ -130,9 +133,7 @@ def process_bicimad_response(bicimad):
     else:
         line += "  \U0001F534INOPERATIVA\U0001F534"
     line += "\n"
-    line += "\n\U0001F4CDUbicación: https://google.com/maps/search/?api=1&query=" + \
-        str(bicimad["geometry"]["coordinates"][1]) + "," + \
-        str(bicimad["geometry"]["coordinates"][0])
+    line += "\n\U0001F4CDUbicación: " + map_link_maker(bicimad["geometry"]["coordinates"][1], bicimad["geometry"]["coordinates"][0])
     line += "\n"
     return line
 

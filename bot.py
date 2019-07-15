@@ -109,6 +109,13 @@ def process_arrival_response(arrivals):
         result += make_arrival_line(arrival)
     return result + "\n\n"
 
+def bicimad_light(light):
+    switcher_light = {
+        0: "\U0001F7E9BAJA\U0001F7E9",
+        1: "\U0001F7E7MEDIA\U0001F7E7",
+        2: "\U0001F7E5ALTA\U0001F7E5"
+    }
+    return switcher_light.get(light, "Indefinido")
 
 def process_bicimad_response(bicimad):
     line = "\n"
@@ -120,12 +127,7 @@ def process_bicimad_response(bicimad):
         line += "\n  Huecos disponibles: " + str(bicimad["free_bases"])
         line += "\n  Bicicletas disponibles: " + str(bicimad["dock_bikes"])
         line += "\n  Nivel de ocupación: "
-        if(bicimad["light"] > 1):
-            line += "\U0001F7E5ALTA\U0001F7E5"
-        elif(bicimad["light"] > 0):
-            line += "\U0001F7E7MEDIA\U0001F7E7"
-        else:
-            line += "\U0001F7E9BAJA\U0001F7E9"
+        line += bicimad_light(bicimad["light"])
     else:
         line += "  \U0001F534INOPERATIVA\U0001F534"
     line += "\n"

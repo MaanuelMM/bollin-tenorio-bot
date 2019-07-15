@@ -20,18 +20,27 @@ from logger import get_logger
 # Enable logger
 logger = get_logger("bot", True)
 logger.info("Starting bot...")
-# Get data vars
-logger.info("Getting data vars...")
-data = DataLoader()
-# Create TeleBot
-logger.info("Creating TeleBot...")
-bot = telebot.TeleBot(token=data.TOKEN)
-# Create Flask server
-logger.info("Creating Flask server...")
-server = Flask(__name__)
 
-if 'DYNO' in os.environ:  # only trigger SSLify if the app is running on Heroku
-    sslify = SSLify(server)
+try:
+    # Get data vars
+    logger.info("Getting data and config vars...")
+    data = DataLoader()
+
+    # Create TeleBot
+    logger.info("Creating TeleBot...")
+    bot = telebot.TeleBot(token=data.TOKEN)
+
+    # Create Flask server
+    logger.info("Creating Flask server...")
+    server = Flask(__name__)
+
+    if 'DYNO' in os.environ:  # only trigger SSLify if the app is running on Heroku
+        sslify = SSLify(server)
+
+except Exception as e:
+    logger.info("Error creating Bot. Shutting down...")
+    logger.error(e, exc_info=True)
+    exit()
 
 
 def log_message(message):
@@ -315,6 +324,11 @@ def webhook():
 
 
 if __name__ == "__main__":
-    # Run server
-    logger.info("Starting running server...")
-    server.run(host="0.0.0.0", port=int(data.PORT))
+    try:
+        # Run server
+        logger.info("Starting running server...")
+        server.run(host="0.0.0.0", port=int(data.PORT))
+    except Exception as e:
+        logger.info("Error starting server. Shutting down...")
+        logger.error(e, exc_info=True)
+        exit()

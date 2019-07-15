@@ -3,7 +3,7 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/07/14
+# Last update:  2019/07/15
 
 import os
 import telebot
@@ -270,7 +270,8 @@ def send_bicimad(message):
             else:
                 bot.reply_to(message, data.BICIMAD_NO_INFO)
             del bicimad
-
+        except Exception as e:
+            logger.error(e, exc_info=True)
     else:
         bot.reply_to(message, data.BICIMAD_BAD_SPECIFIED)
     del text

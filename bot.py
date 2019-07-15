@@ -250,9 +250,8 @@ def send_hola(message):
 def send_parada(message):
     log_message(message)
     text = get_text(message.text)
-    if(str(message.chat.id) in data.EMTMADRID_ARRIVE_LIST and text.upper() in
-            data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)]):
-        text = data.EMTMADRID_ARRIVE_LIST[str(message.chat.id)][text.upper()]
+    if(str(message.chat.id) in data.PARADA_CHAT_LIST and text.upper() in data.PARADA_CHAT_LIST[str(message.chat.id)]):
+        text = data.PARADA_CHAT_LIST[str(message.chat.id)][text.upper()]
     if is_integer(text):
         try:
             arrive_stop = get_arrive_stop_clean(text)

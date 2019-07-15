@@ -26,8 +26,7 @@ class DataLoader:
             self.URL = os.environ.get('URL')
             self.EMTMADRID_EMAIL = os.environ.get('EMTMADRID_EMAIL')
             self.EMTMADRID_PASSWORD = os.environ.get('EMTMADRID_PASSWORD')
-            self.EMTMADRID_ARRIVE_LIST = literal_eval(
-                os.environ.get('EMTMADRID_ARRIVE_LIST'))
+            self.PARADA_CHAT_LIST = literal_eval(os.environ.get('EMTMADRID_ARRIVE_LIST'))
             logger.info("Successfully gotten Config Vars from server.")
 
             # Get data from JSON file

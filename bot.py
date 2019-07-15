@@ -126,8 +126,7 @@ def process_bicimad_response(bicimad):
         line += "\n"
         line += "\n  Huecos disponibles: " + str(bicimad["free_bases"])
         line += "\n  Bicicletas disponibles: " + str(bicimad["dock_bikes"])
-        line += "\n  Nivel de ocupación: "
-        line += bicimad_light(bicimad["light"])
+        line += "\n  Nivel de ocupación: " + bicimad_light(bicimad["light"])
     else:
         line += "  \U0001F534INOPERATIVA\U0001F534"
     line += "\n"

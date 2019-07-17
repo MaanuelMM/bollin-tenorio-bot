@@ -193,7 +193,10 @@ def get_arrive_stop_clean(stop_id):
     try:
         arrive_stop_response = get_arrive_stop(
             data.EMTMADRID_GETARRIVESTOPURL, get_token_clean(), stop_id, data.EMTMADRID_GETARRIVESTOPJSON)
-        arrive_stop = arrive_stop_response["data"][0]["Arrive"]
+        try:
+            arrive_stop = arrive_stop_response["data"][0]["Arrive"]
+        except:
+            arrive_stop = ""
         del arrive_stop_response
     except:
         try:
@@ -208,7 +211,10 @@ def get_bicimad_clean(station_id):
     try:
         bicimad_response = get_bicimad(
             data.EMTMADRID_GETBICIMADSTATIONSURL, get_token_clean(), station_id)
-        bicimad = bicimad_response["data"]
+        try:
+            bicimad = bicimad_response["data"]
+        except:
+            bicimad = ""
         del bicimad_response
     except:
         try:
@@ -223,7 +229,10 @@ def get_parkings_clean():
     try:
         parkings_response = get_parkings(
             data.EMTMADRID_GETPARKINGSSTATUSURL, get_token_clean())
-        parkings = parkings_response["data"]
+        try:
+            parkings = parkings_response["data"]
+        except:
+            parkings = ""
         del parkings_response
     except:
         try:

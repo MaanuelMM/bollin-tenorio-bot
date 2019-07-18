@@ -272,6 +272,7 @@ def send_parada(message):
             del arrive_stop
         except Exception as e:
             logger.error(e, exc_info=True)
+            bot.reply_to(message, data.REQUEST_FAIL)
     else:
         bot.reply_to(message, data.PARADA_BAD_SPECIFIED)
     del text
@@ -291,6 +292,7 @@ def send_bicimad(message):
             del bicimad
         except Exception as e:
             logger.error(e, exc_info=True)
+            bot.reply_to(message, data.REQUEST_FAIL)
     else:
         bot.reply_to(message, data.BICIMAD_BAD_SPECIFIED)
     del text
@@ -304,6 +306,7 @@ def send_parkings(message):
                        process_parkings_response(get_parkings_clean()))
     except Exception as e:
         logger.error(e, exc_info=True)
+        bot.reply_to(message, data.REQUEST_FAIL)
 
 
 # Help command handler

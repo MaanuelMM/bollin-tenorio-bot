@@ -157,9 +157,9 @@ def process_parkings_response(parkings):
     return result
 
 
-def generate_metro_data_response(data):
+def generate_metro_data_response(metro_data):
     response = {}
-    soup = BeautifulSoup(data, "html.parser")
+    soup = BeautifulSoup(metro_data, "html.parser")
     for img in soup.find_all("img"):
         line = img.get('class')[0].replace("-", " ").capitalize()
         estimations = re.sub(r'\s\s+', r'\n    ', img.parent.next_sibling.next_sibling.text).strip()
@@ -169,9 +169,9 @@ def generate_metro_data_response(data):
     return response
 
 
-def process_metro_response(data):
+def process_metro_response(metro_data):
     result = ""
-    for k, v in generate_metro_data_response(data).items():
+    for k, v in generate_metro_data_response(metro_data).items():
         result += "\n"
         result += k
         for item in v:

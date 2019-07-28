@@ -162,7 +162,7 @@ def generate_metro_data_response(metro_data):
     response = {}
     soup = BeautifulSoup(metro_data, "html.parser")
     for img in soup.find_all("img"):
-        line = img.get('class')[0].replace("-", " ").capitalize()
+        line = img.get('class')[0].replace("-", " ").upper()
         estimations = re.sub(r'\s\s+', r'\n    ', img.parent.next_sibling.next_sibling.text).strip()
         if line not in response:
             response[line] = []
@@ -174,7 +174,7 @@ def process_metro_response(metro_data):
     result = ""
     for k, v in generate_metro_data_response(metro_data).items():
         result += "\n\n"
-        result += k.replace("Linea", "Línea")
+        result += k.replace("LINEA", "LÍNEA")
         for item in v:
             result += "\n  "
             result += item

@@ -2,7 +2,7 @@
     "Bot": {
         "start": "Hola a todos, mis papirrines <3",
         "hola": "Hola, ",
-        "help": "Lo siento si funciono mal o estoy muy limitado en funciones, pero estoy trabajando para mejorar día a día :-)\n\nSi desea ver todo lo que puedo hacer, escriba \"\\\" (barrita invertida) para ver la lista de comandos disponibles.",
+        "help": "Lo siento si funciono mal o estoy muy limitado en funciones, pero estoy trabajando para mejorar día a día :-)\n\nSi desea ver todo lo que puedo hacer, escriba \"\\\" (barrita invertida) para ver la lista de comandos disponibles.\n\nCódigo fuente disponible en GitHub: https://github.com/MaanuelMM/bollin-tenorio-bot",
         "parada_successful": "He aquí los resultados de la parada #<stopId>:",
         "parada_successful_disclaimer": "Nota: si falta alguna línea, significa que no existen estimaciones para esta.",
         "parada_bad_specified": "Error, no ha introducido correctamente la parada a consultar.",
@@ -10,6 +10,10 @@
         "bicimad_bad_specified": "Error, no ha introducido correctamente la estación BiciMAD a consultar.",
         "bicimad_no_info": "Lo siento, no existe información de la estación BiciMAD indicada :'(",
         "parkings": "A continuación se muestra la disponibilidad de los párkings de la ciudad de Madrid:",
+        "metro_successful": "He aquí los resultados de la estación indicada:",
+        "metro_bad_specified": "Error, no ha introducido correctamente la estación a consultar.",
+        "metro_does_not_exist": "Lo siento, pero la estación indicada no existe.\n\nTambién es posible que la lista de estaciones esté desactualizada, por lo que deberá contactar con el administrador de bot para actualizarla (se planea que en un futuro no haga falta su actualización).",
+        "metro_no_estimation": "Ahora mismo no existen estimaciones para la parada indicada.\n\nPruebe probar de nuevo en unos minutos.",
         "request_fail": "Ha habido un error a la hora de realizar la consulta.\n\nContacte con el administrador del bot para tratar de solventar el problema."
     },
     "EMTMadrid": {
@@ -24,5 +28,9 @@
         },
         "GetBicimadStationsURL": "https://openapi.emtmadrid.es/v1/transport/bicimad/stations/<idStation>/",
         "GetParkingsStatusURL": "https://openapi.emtmadrid.es/v1/citymad/places/parkings/availability/"
+    },
+    "MetroMadrid": {
+        "GetStationsListURL": "https://raw.githubusercontent.com/MaanuelMM/metro-madrid-stations/master/stations.json",
+        "GetArriveStationURL": "https://www.metromadrid.es/es/metro_next_trains/modal/"
     }
 }

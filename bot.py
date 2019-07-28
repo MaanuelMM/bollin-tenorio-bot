@@ -172,8 +172,8 @@ def generate_metro_data_response(metro_data):
 def process_metro_response(metro_data):
     result = ""
     for k, v in generate_metro_data_response(metro_data).items():
-        result += "\n"
-        result += k
+        result += "\n\n"
+        result += k.replace("Linea", "Línea")
         for item in v:
             result += "\n  "
             result += item
@@ -359,7 +359,7 @@ def send_metro(message):
             if text in stations:
                 response = get_metro_arrival_clean(stations[text])
                 if response:
-                    message_sender(message, process_metro_response(response))
+                    message_sender(message, data.METRO_SUCCESSFUL + process_metro_response(response))
                 else:
                     bot.reply_to(message, data.METRO_NO_ESTIMATION)
                 del response

@@ -359,7 +359,7 @@ def send_metro(message):
             if text in stations:
                 response = get_metro_arrival_clean(stations[text])
                 if response:
-                    message_sender(message, process_metro_response(data))
+                    message_sender(message, process_metro_response(response))
                 else:
                     bot.reply_to(message, data.METRO_NO_ESTIMATION)
                 del response

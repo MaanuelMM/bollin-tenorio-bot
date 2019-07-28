@@ -3,10 +3,10 @@
 # Authors:      CoreDumped-ETSISI, MaanuelMM
 # Credits:      CoreDumped-ETSISI
 # Created:      2019/02/14
-# Last update:  2019/07/15
+# Last update:  2019/07/28
 
-import json
 import os
+import json
 
 from logger import get_logger
 from ast import literal_eval
@@ -47,6 +47,10 @@ class DataLoader:
             self.BICIMAD_BAD_SPECIFIED = loaded_data["Bot"]["bicimad_bad_specified"]
             self.BICIMAD_NO_INFO = loaded_data["Bot"]["bicimad_no_info"]
             self.PARKINGS = loaded_data["Bot"]["parkings"]
+            self.METRO_SUCCESSFUL = loaded_data["Bot"]["metro_successful"]
+            self.METRO_BAD_SPECIFIED = loaded_data["Bot"]["metro_bad_specified"]
+            self.METRO_DOES_NOT_EXIST = loaded_data["Bot"]["metro_does_not_exist"]
+            self.METRO_NO_ESTIMATION = loaded_data["Bot"]["metro_no_estimation"]
             self.REQUEST_FAIL = loaded_data["Bot"]["request_fail"]
             logger.info("Successfully gotten Bot Strings")
 
@@ -57,7 +61,12 @@ class DataLoader:
             self.EMTMADRID_GETARRIVESTOPJSON = loaded_data["EMTMadrid"]["GetArriveStopJSON"]
             self.EMTMADRID_GETBICIMADSTATIONSURL = loaded_data["EMTMadrid"]["GetBicimadStationsURL"]
             self.EMTMADRID_GETPARKINGSSTATUSURL = loaded_data["EMTMadrid"]["GetParkingsStatusURL"]
-            logger.info("Successfully gotten Bot Strings")
+            logger.info("Successfully gotten EMT Madrid API Data")
+
+            # Get Metro Madrid API Data
+            logger.info("Getting Metro Madrid API Data...")
+            self.METROMADRID_GETSTATIONSLISTURL = loaded_data["MetroMadrid"]["GetStationsListURL"]
+            self.METROMADRID_GETARRIVESTATIONURL = loaded_data["MetroMadrid"]["GetArriveStationURL"]
 
         except:
             logger.exception("Failed to load all the necessary data.")

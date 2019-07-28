@@ -15,6 +15,7 @@ from bot_requests import get_token, get_arrive_stop, get_bicimad, get_parkings, 
 from data_loader import DataLoader
 from flask import Flask, request
 from flask_sslify import SSLify
+from unidecode import unidecode
 from bs4 import BeautifulSoup
 from logger import get_logger
 
@@ -352,12 +353,13 @@ def send_parkings(message):
 @bot.message_handler(commands=['metro'])
 def send_metro(message):
     log_message(message)
-    text = get_text_with_no_command(message.text)
-    if text:
+    station = get_text_with_no_command(message.text)
+    if station:
+        station = re.sub(r'[^a-zA-Z0-9 ]', r'', unidecode(station).replace("-", " ")).upper()
         try:
             stations = get_metro_stations_clean()
-            if text in stations:
-                response = get_metro_arrival_clean(stations[text])
+            if station in stations:
+                response = get_metro_arrival_clean(stations[station])
                 if response:
                     message_sender(message, data.METRO_SUCCESSFUL + process_metro_response(response))
                 else:
@@ -371,7 +373,7 @@ def send_metro(message):
             bot.reply_to(message, data.REQUEST_FAIL)
     else:
         bot.reply_to(message, data.METRO_BAD_SPECIFIED)
-    del text
+    del station
 
 
 @bot.message_handler(commands=['help'])

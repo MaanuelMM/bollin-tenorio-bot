@@ -3,7 +3,7 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/07/28
+# Last update:  2019/08/10
 
 import os
 import re
@@ -134,7 +134,9 @@ def process_bicimad_response(bicimad):
     else:
         line += "  \U0001F534INOPERATIVA\U0001F534"
     line += "\n"
-    line += "\n\U0001F4CDUbicación: " + map_link_maker(bicimad["geometry"]["coordinates"][1], bicimad["geometry"]["coordinates"][0])
+    line += "\n\U0001F4CDUbicación: " + \
+        map_link_maker(bicimad["geometry"]["coordinates"]
+                       [1], bicimad["geometry"]["coordinates"][0])
     line += "\n"
     return line
 
@@ -163,7 +165,8 @@ def generate_metro_data_response(metro_data):
     soup = BeautifulSoup(metro_data, "html.parser")
     for img in soup.find_all("img"):
         line = img.get('class')[0].replace("-", " ").upper()
-        estimations = re.sub(r'\s\s+', r'\n    ', img.parent.next_sibling.next_sibling.text).strip()
+        estimations = re.sub(r'\s\s+', r'\n    ',
+                             img.parent.next_sibling.next_sibling.text).strip()
         if line not in response:
             response[line] = []
         response[line].append(estimations)
@@ -200,7 +203,8 @@ def message_sender(message, reply):
 
 def get_token_clean():
     try:
-        token_response = get_token(data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
+        token_response = get_token(
+            data.EMTMADRID_GETTOKENSESSIONURL, data.EMTMADRID_EMAIL, data.EMTMADRID_PASSWORD)
         token = token_response["data"][0]["accessToken"]
         del token_response
     except:
@@ -214,7 +218,8 @@ def get_token_clean():
 
 def get_arrive_stop_clean(stop_id):
     try:
-        arrive_stop_response = get_arrive_stop(data.EMTMADRID_GETARRIVESTOPURL, get_token_clean(), stop_id, data.EMTMADRID_GETARRIVESTOPJSON)
+        arrive_stop_response = get_arrive_stop(
+            data.EMTMADRID_GETARRIVESTOPURL, get_token_clean(), stop_id, data.EMTMADRID_GETARRIVESTOPJSON)
         try:
             arrive_stop = arrive_stop_response["data"][0]["Arrive"]
         except:
@@ -231,7 +236,8 @@ def get_arrive_stop_clean(stop_id):
 
 def get_bicimad_clean(station_id):
     try:
-        bicimad_response = get_bicimad(data.EMTMADRID_GETBICIMADSTATIONSURL, get_token_clean(), station_id)
+        bicimad_response = get_bicimad(
+            data.EMTMADRID_GETBICIMADSTATIONSURL, get_token_clean(), station_id)
         try:
             bicimad = bicimad_response["data"]
         except:
@@ -248,7 +254,8 @@ def get_bicimad_clean(station_id):
 
 def get_parkings_clean():
     try:
-        parkings_response = get_parkings(data.EMTMADRID_GETPARKINGSSTATUSURL, get_token_clean())
+        parkings_response = get_parkings(
+            data.EMTMADRID_GETPARKINGSSTATUSURL, get_token_clean())
         try:
             parkings = parkings_response["data"]
         except:
@@ -265,7 +272,8 @@ def get_parkings_clean():
 
 def get_metro_arrival_clean(station_id):
     try:
-        metro_response = get_generic_request(data.METROMADRID_GETARRIVESTATIONURL + station_id).json()
+        metro_response = get_generic_request(
+            data.METROMADRID_GETARRIVESTATIONURL + station_id).json()
         try:
             metro = metro_response[0]["data"]
         except:
@@ -283,7 +291,6 @@ def get_metro_stations_clean():
     except:
         log_api_error("Unable to get Metro Madrid stations from GitHub.")
         raise
-
 
 
 @bot.message_handler(commands=['start'])
@@ -308,7 +315,8 @@ def send_parada(message):
         try:
             arrive_stop = get_arrive_stop_clean(text)
             if arrive_stop:
-                message_sender(message, data.PARADA_SUCCESSFUL.replace("<stopId>", text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER)
+                message_sender(message, data.PARADA_SUCCESSFUL.replace(
+                    "<stopId>", text) + process_arrival_response(arrive_stop) + data.PARADA_SUCCESSFUL_DISCLAIMER)
             else:
                 bot.reply_to(message, data.PARADA_NO_ESTIMATION)
             del arrive_stop
@@ -344,7 +352,8 @@ def send_bicimad(message):
 def send_parkings(message):
     log_message(message)
     try:
-        message_sender(message, data.PARKINGS + process_parkings_response(get_parkings_clean()))
+        message_sender(message, data.PARKINGS +
+                       process_parkings_response(get_parkings_clean()))
     except Exception as e:
         logger.error(e, exc_info=True)
         bot.reply_to(message, data.REQUEST_FAIL)
@@ -355,13 +364,15 @@ def send_metro(message):
     log_message(message)
     station = get_text_with_no_command(message.text)
     if station:
-        station = re.sub(r'[^a-zA-Z0-9 ]', r'', unidecode(station).replace("-", " ")).upper()
+        station = re.sub(r'[^a-zA-Z0-9 ]', r'',
+                         unidecode(station).replace("-", " ")).upper()
         try:
             stations = get_metro_stations_clean()
             if station in stations:
                 response = get_metro_arrival_clean(stations[station])
                 if response:
-                    message_sender(message, data.METRO_SUCCESSFUL + process_metro_response(response))
+                    message_sender(message, data.METRO_SUCCESSFUL +
+                                   process_metro_response(response))
                 else:
                     bot.reply_to(message, data.METRO_NO_ESTIMATION)
                 del response

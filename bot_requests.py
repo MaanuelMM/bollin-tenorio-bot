@@ -3,12 +3,13 @@
 # Authors:      MaanuelMM
 # Credits:      EMT-Madrid, alvaroreig
 # Created:      2019/02/22
-# Last update:  2019/07/28
+# Last update:  2019/08/10
 
 import requests
 
 
 TIMEOUT = 10    # seconds
+
 
 def get_token(url, email, password):
     return requests.get(url, headers={"email": email, "password": password}, timeout=TIMEOUT).json()

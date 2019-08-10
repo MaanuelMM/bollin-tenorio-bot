@@ -8,7 +8,7 @@
 import requests
 
 
-TIMEOUT = 10    # seconds
+TIMEOUT = 15    # seconds
 
 
 def get_token(url, email, password):

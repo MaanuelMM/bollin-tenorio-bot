@@ -108,8 +108,8 @@ def process_arrival_response(arrivals):
     return result + "\n\n"
 
 
-def map_link_maker(coordX, coordY):
-    return "https://google.com/maps/search/?api=1&query=" + str(coordX) + "," + str(coordY)
+def map_link_maker(coord_x, coord_y):
+    return "https://google.com/maps/search/?api=1&query=" + str(coord_x) + "," + str(coord_y)
 
 
 def bicimad_light(light):

@@ -394,7 +394,7 @@ def send_help(message):
 
 
 @server.route("/" + data.TOKEN, methods=['POST'])
-def getMessage():
+def get_message():
     bot.process_new_updates(
         [telebot.types.Update.de_json(request.stream.read().decode("utf-8"))])
     return "!", 200

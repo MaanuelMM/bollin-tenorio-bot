@@ -3,7 +3,7 @@
 # Authors:      MaanuelMM
 # Credits:      eternnoir, atlink, CoreDumped-ETSISI, Eldinnie
 # Created:      2019/02/14
-# Last update:  2019/08/10
+# Last update:  2019/11/27
 
 import os
 import re
@@ -74,8 +74,8 @@ def process_time_left(time_left):
         time_left = int(time_left)
         if(time_left == 0):
             return "En parada"
-        elif(time_left > 1200):
-            return ">20:00min"
+        elif(time_left > 2700):
+            return ">45:00min"
         else:
             return "  " + str(int(time_left / 60)).zfill(2) + ":" + str(int(time_left % 60)).zfill(2) + "min"
     else:
